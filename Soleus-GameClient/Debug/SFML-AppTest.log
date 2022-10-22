@@ -1,0 +1,125 @@
+﻿C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\MSBuild\Microsoft\VC\v160\Microsoft.CppBuild.targets(452,5): warning MSB8028: The intermediate directory (Debug\) contains files shared from another project (SFML-AppTest-MMO.vcxproj, SFML-AppTest.vcxproj).  This can lead to incorrect clean and rebuild behavior.
+  Game.cpp
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\TileMap.h(35,55): warning C4244:  'argumento': conversão de 'unsigned int' para 'T', possível perda de dados
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\TileMap.h(35,55): warning C4244:         with
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\TileMap.h(35,55): warning C4244:         [
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\TileMap.h(35,55): warning C4244:             T=float
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\TileMap.h(35,55): warning C4244:         ]
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\TileMap.h(35,39): warning C4244:  'argumento': conversão de 'unsigned int' para 'T', possível perda de dados
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\TileMap.h(35,39): warning C4244:         with
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\TileMap.h(35,39): warning C4244:         [
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\TileMap.h(35,39): warning C4244:             T=float
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\TileMap.h(35,39): warning C4244:         ]
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\TileMap.h(36,61): warning C4244:  'argumento': conversão de 'unsigned int' para 'T', possível perda de dados
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\TileMap.h(36,61): warning C4244:         with
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\TileMap.h(36,61): warning C4244:         [
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\TileMap.h(36,61): warning C4244:             T=float
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\TileMap.h(36,61): warning C4244:         ]
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\TileMap.h(36,45): warning C4244:  'argumento': conversão de 'unsigned int' para 'T', possível perda de dados
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\TileMap.h(36,45): warning C4244:         with
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\TileMap.h(36,45): warning C4244:         [
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\TileMap.h(36,45): warning C4244:             T=float
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\TileMap.h(36,45): warning C4244:         ]
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\TileMap.h(37,67): warning C4244:  'argumento': conversão de 'unsigned int' para 'T', possível perda de dados
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\TileMap.h(37,67): warning C4244:         with
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\TileMap.h(37,67): warning C4244:         [
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\TileMap.h(37,67): warning C4244:             T=float
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\TileMap.h(37,67): warning C4244:         ]
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\TileMap.h(37,45): warning C4244:  'argumento': conversão de 'unsigned int' para 'T', possível perda de dados
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\TileMap.h(37,45): warning C4244:         with
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\TileMap.h(37,45): warning C4244:         [
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\TileMap.h(37,45): warning C4244:             T=float
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\TileMap.h(37,45): warning C4244:         ]
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\TileMap.h(38,61): warning C4244:  'argumento': conversão de 'unsigned int' para 'T', possível perda de dados
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\TileMap.h(38,61): warning C4244:         with
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\TileMap.h(38,61): warning C4244:         [
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\TileMap.h(38,61): warning C4244:             T=float
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\TileMap.h(38,61): warning C4244:         ]
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\TileMap.h(38,39): warning C4244:  'argumento': conversão de 'unsigned int' para 'T', possível perda de dados
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\TileMap.h(38,39): warning C4244:         with
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\TileMap.h(38,39): warning C4244:         [
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\TileMap.h(38,39): warning C4244:             T=float
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\TileMap.h(38,39): warning C4244:         ]
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\TileMap.h(41,58): warning C4244:  'argumento': conversão de 'T' para 'T', possível perda de dados
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\TileMap.h(41,58): warning C4244:         with
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\TileMap.h(41,58): warning C4244:         [
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\TileMap.h(41,58): warning C4244:             T=unsigned int
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\TileMap.h(41,58): warning C4244:         ]
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\TileMap.h(41,58): warning C4244:         and
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\TileMap.h(41,58): warning C4244:         [
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\TileMap.h(41,58): warning C4244:             T=float
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\TileMap.h(41,58): warning C4244:         ]
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\TileMap.h(41,41): warning C4244:  'argumento': conversão de 'T' para 'T', possível perda de dados
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\TileMap.h(41,41): warning C4244:         with
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\TileMap.h(41,41): warning C4244:         [
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\TileMap.h(41,41): warning C4244:             T=unsigned int
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\TileMap.h(41,41): warning C4244:         ]
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\TileMap.h(41,41): warning C4244:         and
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\TileMap.h(41,41): warning C4244:         [
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\TileMap.h(41,41): warning C4244:             T=float
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\TileMap.h(41,41): warning C4244:         ]
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\TileMap.h(42,64): warning C4244:  'argumento': conversão de 'T' para 'T', possível perda de dados
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\TileMap.h(42,64): warning C4244:         with
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\TileMap.h(42,64): warning C4244:         [
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\TileMap.h(42,64): warning C4244:             T=unsigned int
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\TileMap.h(42,64): warning C4244:         ]
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\TileMap.h(42,64): warning C4244:         and
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\TileMap.h(42,64): warning C4244:         [
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\TileMap.h(42,64): warning C4244:             T=float
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\TileMap.h(42,64): warning C4244:         ]
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\TileMap.h(42,47): warning C4244:  'argumento': conversão de 'T' para 'T', possível perda de dados
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\TileMap.h(42,47): warning C4244:         with
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\TileMap.h(42,47): warning C4244:         [
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\TileMap.h(42,47): warning C4244:             T=unsigned int
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\TileMap.h(42,47): warning C4244:         ]
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\TileMap.h(42,47): warning C4244:         and
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\TileMap.h(42,47): warning C4244:         [
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\TileMap.h(42,47): warning C4244:             T=float
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\TileMap.h(42,47): warning C4244:         ]
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\TileMap.h(43,70): warning C4244:  'argumento': conversão de 'T' para 'T', possível perda de dados
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\TileMap.h(43,70): warning C4244:         with
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\TileMap.h(43,70): warning C4244:         [
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\TileMap.h(43,70): warning C4244:             T=unsigned int
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\TileMap.h(43,70): warning C4244:         ]
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\TileMap.h(43,70): warning C4244:         and
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\TileMap.h(43,70): warning C4244:         [
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\TileMap.h(43,70): warning C4244:             T=float
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\TileMap.h(43,70): warning C4244:         ]
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\TileMap.h(43,47): warning C4244:  'argumento': conversão de 'T' para 'T', possível perda de dados
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\TileMap.h(43,47): warning C4244:         with
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\TileMap.h(43,47): warning C4244:         [
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\TileMap.h(43,47): warning C4244:             T=unsigned int
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\TileMap.h(43,47): warning C4244:         ]
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\TileMap.h(43,47): warning C4244:         and
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\TileMap.h(43,47): warning C4244:         [
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\TileMap.h(43,47): warning C4244:             T=float
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\TileMap.h(43,47): warning C4244:         ]
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\TileMap.h(44,64): warning C4244:  'argumento': conversão de 'T' para 'T', possível perda de dados
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\TileMap.h(44,64): warning C4244:         with
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\TileMap.h(44,64): warning C4244:         [
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\TileMap.h(44,64): warning C4244:             T=unsigned int
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\TileMap.h(44,64): warning C4244:         ]
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\TileMap.h(44,64): warning C4244:         and
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\TileMap.h(44,64): warning C4244:         [
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\TileMap.h(44,64): warning C4244:             T=float
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\TileMap.h(44,64): warning C4244:         ]
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\TileMap.h(44,41): warning C4244:  'argumento': conversão de 'T' para 'T', possível perda de dados
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\TileMap.h(44,41): warning C4244:         with
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\TileMap.h(44,41): warning C4244:         [
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\TileMap.h(44,41): warning C4244:             T=unsigned int
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\TileMap.h(44,41): warning C4244:         ]
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\TileMap.h(44,41): warning C4244:         and
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\TileMap.h(44,41): warning C4244:         [
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\TileMap.h(44,41): warning C4244:             T=float
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\TileMap.h(44,41): warning C4244:         ]
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\Game.cpp(295,25): warning C4244:  'inicializando': conversão de '_Rep' para 'sf::Uint32', possível perda de dados
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\Game.cpp(295,25): warning C4244:         with
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\Game.cpp(295,25): warning C4244:         [
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\Game.cpp(295,25): warning C4244:             _Rep=__int64
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\Game.cpp(295,25): warning C4244:         ]
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\Game.cpp(303,14): warning C4244:  '=': conversão de '_Rep' para 'long', possível perda de dados
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\Game.cpp(303,14): warning C4244:         with
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\Game.cpp(303,14): warning C4244:         [
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\Game.cpp(303,14): warning C4244:             _Rep=__int64
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\Game.cpp(303,14): warning C4244:         ]
+  SFML-AppTest.vcxproj -> C:\Users\MICRO\source\repos\Soleus\Debug\Soleus-Client.exe
