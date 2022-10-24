@@ -136,8 +136,10 @@
   <ItemGroup>
     <ClCompile Include="Entity.cpp" />
     <ClCompile Include="Game.cpp" />
+    <ClCompile Include="GameLoop.cpp" />
     <ClCompile Include="InputHandler.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Networker.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="TileMap.cpp" />
   </ItemGroup>
@@ -145,9 +147,13 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Date.h" />
     <ClInclude Include="Entity.h" />
     <ClInclude Include="Game.h" />
+    <ClInclude Include="GameLoop.h" />
     <ClInclude Include="InputHandler.h" />
+    <ClInclude Include="Messenger.h" />
+    <ClInclude Include="Networker.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="TileMap.h" />
   </ItemGroup>

@@ -3,7 +3,7 @@
 int main()
 {
 	// creates game
-	Game game = Game();
+	Game game;
 	// starts game
 	game.run();
 

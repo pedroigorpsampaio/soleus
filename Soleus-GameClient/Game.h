@@ -6,39 +6,44 @@
 #include "InputHandler.h"
 #include "Player.h"
 #include "Entity.h"
-#include <chrono>
+#include "Networker.h"
+#include "GameLoop.h"
 
 #ifndef GAME_H
 #define GAME_H
 
 // Class that manages the game on client-side
-class Game
+class Game : public GameLoop
 {
 	public:
 		Game(); // constructor
-		void run(); // starts the game
 
+		//====================
+		// Interface
+		//====================
+
+		/// Called after construction, immediately before entering the update loop.
+		/// Connection establishment and resource loading should go here. If this
+		/// method returns false, the Game will not enter the update loop, and it
+		/// will immediately switch to the Shutdown state.
+		virtual bool load() override;
+
+		/// Called after the update loop has finished. Frees any resources used by
+		/// the game before exiting.
+		virtual void shutdown() override;
+
+		/// Called on every tick. Because we're running at a fixed time-step, this
+		/// should be called at a regular interval.
+		/// @param    dt    The time since the last update (seconds).
+		virtual void update(float dt) override;
+
+		/// Draw the Game
+		virtual void draw() override;
 	private:
-		// load connection
-		int loadConnection();
-
-		// loads configurations
-		void load();
-
-		// updates game
-		void update(float dt);
-
-		// draw game
-		void draw();
-
-		// sends udp packet to a server
-		int sendUdpPacket(sf::Packet packet, sf::IpAddress recipient, unsigned short port);
-
-		// handles messages received via udp on socket
-		void receiveUdpPacket(float dt);
-
-		// sends ping packet to server to measure latency
-		void sendPingToServer();
+		void sendPingToServer(); // sends ping packet to the server
 };
 
+// handles packets received - called as a callback from network object
+void handlePacket(sf::Packet packet, sf::IpAddress sender, unsigned short port);
+std::string getDateTime(std::chrono::time_point<std::chrono::system_clock> timestamp);
 #endif

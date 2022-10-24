@@ -1,11 +1,13 @@
 #include "Game.h"
+#include <iomanip>
+#include "date.h"
 
 // timers
 std::chrono::time_point<std::chrono::system_clock> startLatencyTimer = std::chrono::system_clock::now();
 std::chrono::time_point<std::chrono::system_clock> endLatencyTimer = std::chrono::system_clock::now();
 
 float speed = 100.f; // moving speed
-float zoomSpeed = 400.f; // zoom speed
+float zoomSpeed = 40.f; // zoom speed
 sf::RenderWindow window; // game window
 sf::Clock deltaClock;	// game delta clock
 sf::Font font; 		// game main font
@@ -23,12 +25,8 @@ TileMap map;
 // player
 Player player(100, 100, 128, sf::Vector2f(0, 0));
 
-// game server properties
-sf::IpAddress gameServerIP = "192.168.0.92";
-unsigned short gameServerPort = 43570;
-unsigned short clientPort = 43579;
-sf::UdpSocket gameServerSocket;
-sf::UdpSocket clientSocket;
+// Network object that bridges communication with server
+Networker net;
 
 // client-server latency
 long latency = 0;
@@ -36,17 +34,24 @@ sf::Text pingText;
 double pingTimer = 0;
 int pingInterval = 1; // latency check interval in seconds
 
-// constructor just calls load method that loads configuration
-Game::Game() {
-	load();
-}
+// fps text
+sf::Text fpsText;
+
+// mutex for multithreading data protection
+//sf::Mutex mutex;
+
+//// pinger thread - pings server every {interval}
+//std::unique_ptr<sf::Thread> pingerThread;
+
+// constructor
+Game::Game() {}
 
 // loads game configurations - run at the start of game cycle
-void Game::load() {
-	// loads connection
-	loadConnection();
+bool Game::load() {
 	// create the window
 	window.create(sf::VideoMode(960, 640), "Tilemap");
+	// limits fps
+	window.setVerticalSyncEnabled(true);
 	// create the Input Handler for player inputs handling
 	InputHandler inputHandler = InputHandler();
 
@@ -57,18 +62,25 @@ void Game::load() {
 
 	// select the font
 	pingText.setFont(font); // font is a sf::Font
-
+	fpsText.setFont(font); // font is a sf::Font
 	// set the string to display
 	pingText.setString("Ping: 0ms");
+	fpsText.setString("FPS: 60fps");
 
 	// set the character size
 	pingText.setCharacterSize(24); // in pixels, not points!
+	fpsText.setCharacterSize(24); // in pixels, not points!
 
 	// set the color
 	pingText.setFillColor(sf::Color::White);
+	fpsText.setFillColor(sf::Color::White);
 
 	// set the text style
 	pingText.setStyle(sf::Text::Bold);
+	fpsText.setStyle(sf::Text::Bold);
+
+	// set position
+	fpsText.setPosition(0.0f, 30.0f);
 
 	// define the level with an array of tile indices
 	const int level[] =
@@ -126,41 +138,41 @@ void Game::load() {
 
 	texture.setSmooth(true);
 	sf::Sprite sprite;
+
+	// creates pinger thread - pings server every {pingerInterval}
+	//pingerThread = std::make_unique<sf::Thread>(&Game::pinger, this);
+	//// run it
+	//pingerThread->launch();
+
+	return true;
 }
 
-// runes gameloop - update and draw
-void Game::run() {
-	// creates player
-	// player = Player(100, 100, 128, sf::Vector2f(0, 0));
-
-	// run the main loop
-	while (window.isOpen())
-	{
-		// updates game clock
-		sf::Time dt = deltaClock.restart();
-
-		// updates latency timer
-		pingTimer += dt.asSeconds();
-
-		// updates game
-		update(dt.asSeconds());
-
-		// draws game
-		draw();
-	}
-
+void Game::shutdown() {
+	window.close();
 }
+
 
 // updates game before drawing
 void Game::update(float dt) {
+	// obesrves packets received by server - sends the callback to handle them
+	net.observe(handlePacket);
+
+	// updates latency timer
+	pingTimer += dt;
+
+	// centers minimap based on game view
 	miniMapView.setCenter(sf::Vector2f(gameView.getCenter()));
 
 	// if reaches latency check interval, send ping msg to measure latency
-	if (pingTimer >= pingInterval)
+	if (pingTimer >= pingInterval) {
+		// updates fps
+		std::stringstream ss;
+		float fps = 1 / dt;
+		ss << "FPS: " << fps << "fps" << std::endl;
+		std::string fpsStr = ss.str();
+		fpsText.setString(fpsStr);
 		sendPingToServer();
-
-	// check packets received via udp
-	receiveUdpPacket(dt);
+	}
 
 	// update event falgs
 	sf::Event event;
@@ -244,80 +256,88 @@ void Game::draw()
 	// draw in ui view
 	window.setView(uiView);
 	window.draw(pingText);
+	window.draw(fpsText);
 	// end current window frame and displays its content
 	window.display();
-}
-
-// loads connection properties
-int Game::loadConnection() {
-	clientSocket.setBlocking(false);
-	// bind the client socket to a port
-	if (clientSocket.bind(clientPort) != sf::Socket::Done) {
-		// error...
-		std::cout << "Error binding client socket to desired port";
-		return -1;
-	}
-
-	return 0;
-}
-
-// sends packet to a server using UDP Protocol
-int Game::sendUdpPacket(sf::Packet packet, sf::IpAddress recipient, unsigned short port) {
-
-	// sends packet
-	if (gameServerSocket.send(packet, recipient, port) != sf::Socket::Done) {
-		// error...
-		std::cout << "Error sending packet to game server";
-		return -1;
-	}
-
-	return 0;
-}
-
-// receives udp packet
-void Game::receiveUdpPacket(float dt) {
-	sf::IpAddress sender;
-	unsigned short port;
-	sf::Packet packet;
-
-	// receives packets
-	if (clientSocket.receive(packet, sender, port) != sf::Socket::Done) {
-		// no msgs being received 
-	}
-	else { // msg received
-		std::string s;
-
-		packet >> s;
-
-		if (s.compare("pong") == 0) {
-			endLatencyTimer = std::chrono::system_clock::now();
-
-			sf::Uint32 timestamp = std::chrono::duration_cast<std::chrono::milliseconds>
-				(std::chrono::time_point_cast<std::chrono::milliseconds>
-				(std::chrono::high_resolution_clock::now()).time_since_epoch()).count();
-
-			std::chrono::duration<double> elapsed_seconds = endLatencyTimer - startLatencyTimer;
-			auto millis = std::chrono::duration_cast<std::chrono::milliseconds>(elapsed_seconds).count();
-
-			
-			latency = millis;
-			//std::cout << "Ping: " << latency << "ms" << std::endl;
-			std::stringstream ss;
-			ss << "Ping: " << latency << "ms" << std::endl;
-			std::string pingStr = ss.str();
-			pingText.setString(pingStr);
-		}
-	}
 }
 
 // sends ping packet to game server
 void Game::sendPingToServer() {
 	pingTimer = 0; // resets pingTimer for another round of pinging in a defined interval
+
+	//sf::Uint32 timestamp = std::chrono::duration_cast<std::chrono::milliseconds>
+	//	(std::chrono::time_point_cast<std::chrono::milliseconds>
+	//	(std::chrono::high_resolution_clock::now()).time_since_epoch()).count();
+
+	//auto time = std::chrono::system_clock::now();
+	//std::cout << getDateTime(time) << std::endl;
+
+	using namespace std::chrono;
+	// Get current time with precision of milliseconds
+	auto now = time_point_cast<milliseconds>(system_clock::now());
+	// sys_milliseconds is type time_point<system_clock, milliseconds>
+	using sys_milliseconds = decltype(now);
+	// Convert time_point to signed integral type
+	auto integral_duration = now.time_since_epoch().count();
+	// Convert signed integral type to time_point
+	sys_milliseconds time{ sys_milliseconds::duration{integral_duration} };
+
+	std::cout << integral_duration << std::endl;
+	std::cout << getDateTime(time) << std::endl;
+
 	// placehold ping packet
 	sf::Packet packet;
-	packet << "ping";
+	packet << Message::Ping;
 	// sends packet via send udp method
-	sendUdpPacket(packet, gameServerIP, gameServerPort);
+	net.sendUdpPacket(packet, Properties::ServerIP, Properties::ServerPort);
 	// updates timer to measure latency
 	startLatencyTimer = std::chrono::system_clock::now();
+}
+
+// handles packets received - called as a callback from network object
+void handlePacket(sf::Packet packet, sf::IpAddress sender, unsigned short port) {
+	int messageType;
+	packet >> messageType;
+
+	if (messageType == Message::Ping) {
+		endLatencyTimer = std::chrono::system_clock::now();
+
+		/*sf::Uint32 timestamp = std::chrono::duration_cast<std::chrono::milliseconds>
+			(std::chrono::time_point_cast<std::chrono::milliseconds>
+			(std::chrono::high_resolution_clock::now()).time_since_epoch()).count();*/
+
+		std::chrono::duration<double> elapsed_seconds = endLatencyTimer - startLatencyTimer;
+		auto millis = std::chrono::duration_cast<std::chrono::milliseconds>(elapsed_seconds).count();
+
+		latency = millis;
+
+		std::stringstream ss;
+		ss << "Ping: " << latency << "ms" << std::endl;
+		std::string pingStr = ss.str();
+		pingText.setString(pingStr);
+	}
+}
+
+//std::string getTimestamp() {
+//	// get a precise timestamp as a string
+//	const auto now = std::chrono::system_clock::now();
+//	const auto nowAsTimeT = std::chrono::system_clock::to_time_t(now);
+//	const auto nowMs = std::chrono::duration_cast<std::chrono::milliseconds>(
+//		now.time_since_epoch()) % 1000;
+//	std::stringstream nowSs;
+//	nowSs
+//		<< std::put_time(std::localtime(&nowAsTimeT), "%a %b %d %Y %T")
+//		<< '.' << std::setfill('0') << std::setw(3) << nowMs.count();
+//	return nowSs.str();
+//}
+
+/// format timestamp into a string of date and time
+std::string getDateTime(std::chrono::time_point<std::chrono::system_clock> timestamp)
+{
+	using namespace date;
+	using namespace std::chrono;
+
+	std::stringstream ss;
+	std::string s = format("%F %T", floor<seconds>(timestamp));
+	return s;
 }
