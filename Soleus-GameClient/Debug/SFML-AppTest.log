@@ -112,9 +112,6 @@ C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\TileMap.h(44,41): warning C
 C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\TileMap.h(44,41): warning C4244:         [
 C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\TileMap.h(44,41): warning C4244:             T=float
 C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\TileMap.h(44,41): warning C4244:         ]
-C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\Game.cpp(312,13): warning C4244:  '=': conversão de '_Rep' para 'long', possível perda de dados
-C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\Game.cpp(312,13): warning C4244:         with
-C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\Game.cpp(312,13): warning C4244:         [
-C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\Game.cpp(312,13): warning C4244:             _Rep=__int64
-C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\Game.cpp(312,13): warning C4244:         ]
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\Game.cpp(184,13): warning C4244:  'inicializando': conversão de 'float' para 'long', possível perda de dados
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\Game.cpp(207,10): warning C4244:  'inicializando': conversão de 'float' para 'int', possível perda de dados
   SFML-AppTest.vcxproj -> C:\Users\MICRO\source\repos\Soleus\Debug\Soleus-Client.exe

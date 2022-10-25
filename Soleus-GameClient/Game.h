@@ -45,5 +45,7 @@ class Game : public GameLoop
 
 // handles packets received - called as a callback from network object
 void handlePacket(sf::Packet packet, sf::IpAddress sender, unsigned short port);
-std::string getDateTime(std::chrono::time_point<std::chrono::system_clock> timestamp);
+// sync client clock with server clock
+void syncClock(sf::Packet packet);
+
 #endif
