@@ -29,9 +29,11 @@ class Entity
 		int getMaxHealth(); // gets entity max health
 		int getSpeed(); // gets entity speed
 		sf::Vector2f getPos(); // gets entity position in the world
+		sf::Vector2f getCenterOffset(); // gets entity center offset in relation to top-left position point of sprite
 		sf::Sprite getSprite(); // gets entity current sprite
 		void move(sf::Vector2f offset); // moves entity by desired offset (Vector2f)
 		void move(float offsetX, float offsetY); // moves entity by desired offset (float values)
+		void moveTo(float x, float y); // moves entity to desired position
 		int react(Entity source, Event event); // reacts to events directed to the entity
 };
 

@@ -1,7 +1,7 @@
 #include "Game.h"
 #include "Util.h"
 
-float speed = 100.f; // moving speed
+float speed = PLAYER_SPEED; // moving speed
 float zoomSpeed = 40.f; // zoom speed
 sf::RenderWindow window; // game window
 sf::Font font; 		// game main font
@@ -17,7 +17,9 @@ sf::RenderTexture texture;
 // tilemap 
 TileMap map;
 // player
-Player player(100, 100, 128, sf::Vector2f(0, 0));
+Player player(100, 100, 128, sf::Vector2f(INIT_X, INIT_Y));
+sf::Vector2f initPos = player.getPos(), finalPos;
+float interpolIncX = 0, interpolIncY = 0;
 
 // Network object that bridges communication with server
 Networker net;
@@ -47,6 +49,8 @@ bool Game::load() {
 	window.create(sf::VideoMode(960, 640), "Tilemap");
 	// limits fps
 	window.setVerticalSyncEnabled(true);
+	// disable unwanted kep press event calls when key is being hold
+	window.setKeyRepeatEnabled(false);
 	// create the Input Handler for player inputs handling
 	InputHandler inputHandler = InputHandler();
 
@@ -162,20 +166,6 @@ void Game::shutdown() {
 
 // updates game before drawing
 void Game::update(float dt) {
-	
-	//using namespace std::chrono;
-	//gameClock += (dt*1000);
-	//std::cout << gameClock << std::endl;
-
-	//using sys_milliseconds = decltype(time_point_cast<milliseconds>(system_clock::now()));
-	//// Convert signed integral type to time_point
-	//sys_milliseconds gameTime{ sys_milliseconds::duration{gameClock} };
-	//// updates svTime text
-	//std::stringstream svTimeStream;
-	//svTimeStream << getDateTime(gameTime) << std::endl;
-	//std::string svTimeStr = svTimeStream.str();
-	//svTimeText.setString(svTimeStr);
-
 	// obesrves packets received by server - sends the callback to handle them
 	net.observe(handlePacket);
 
@@ -213,35 +203,58 @@ void Game::update(float dt) {
 	sf::Event event;
 	while (window.pollEvent(event)) {
 		inputHandler.handleInput(event);
+
+		// key events -- send to server for proper processing
+		if (event.type == sf::Event::KeyPressed || event.type == sf::Event::KeyReleased) {
+			bool isPressed = event.type == sf::Event::KeyPressed ? true : false;
+			if (event.key.code == sf::Keyboard::Down || event.key.code == sf::Keyboard::S)
+				sendPacketToServer(Message::PlayerMoveDown, isPressed);
+			if (event.key.code == sf::Keyboard::Up || event.key.code == sf::Keyboard::W)
+				sendPacketToServer(Message::PlayerMoveUp, isPressed);
+			if (event.key.code == sf::Keyboard::Left || event.key.code == sf::Keyboard::A)
+				sendPacketToServer(Message::PlayerMoveLeft, isPressed);
+			if (event.key.code == sf::Keyboard::Right || event.key.code == sf::Keyboard::D)
+				sendPacketToServer(Message::PlayerMoveRight, isPressed);
+		}
 	}
 
 	// close games if close event is triggered
 	if(inputHandler.isClosing())
 		window.close();
 
-	// handle movement
+	//// handle movement
+
+	// input prediction
+	sf::Vector2f direction(0, 0);
 	if (inputHandler.isKeyDown())
-		gameView.move(0.f, speed * dt);
-	if (inputHandler.isKeyUp()) {
-		/*sf::Uint16 x = 10;
-		std::string s = "latency";
-		double d = 0.6;
-
-		
-		sf::Packet packet;
-		packet << x << s << d;
-
-		startLatencyTimer = std::chrono::system_clock::now();
-
-		sendUdpPacket(packet, gameServerIP, gameServerPort);*/
-		
-		//sf::Packet reply = receiveUdpPacket(view, dt);
-		gameView.move(0.f, -speed * dt);
-	}
+		direction.y = 1;
+	if (inputHandler.isKeyUp())
+		direction.y = -1;
 	if (inputHandler.isKeyLeft())
-		gameView.move(-speed * dt, 0.f);
+		direction.x = -1;
 	if (inputHandler.isKeyRight())
-		gameView.move(speed * dt, 0.f);
+		direction.x += 1;
+
+	sf::Vector2f nDirection = util::normalize(direction);
+	//std::cout << nDirection.x << "," << nDirection.y << std::endl;
+	player.move(nDirection.x * PLAYER_SPEED * dt, nDirection.y * PLAYER_SPEED * dt);
+
+	// move by interpolated amount - to be used for other entities
+	//float distance = util::distance(player.getPos().x, player.getPos().y, finalPos.x, finalPos.y);
+
+	//if (distance > 0.25f) {
+	//	if (player.getPos().x != finalPos.x)
+	//		player.move(interpolIncX, 0.f);
+	//	if (player.getPos().y != finalPos.y)
+	//		player.move(0.f, interpolIncY);
+	//}
+	//else { player.moveTo(finalPos.x, finalPos.y); }
+
+
+	// centers map based on player 
+	sf::Vector2f centeredPlayerPos(player.getPos().x + player.getCenterOffset().x,
+									player.getPos().y + player.getCenterOffset().y);
+	gameView.setCenter(sf::Vector2f(centeredPlayerPos));
 
 	// handle zooming
 	if (inputHandler.isZooming()) {
@@ -269,7 +282,7 @@ void Game::draw()
 	// player sprites and minimap pinpoint
 	sf::Sprite playerExample = player.getSprite();
 	sf::CircleShape playerPoint;
-	playerExample.setPosition(gameView.getCenter().x - 16, gameView.getCenter().y - 16);
+	playerExample.setPosition(player.getPos().x - player.getCenterOffset().x, player.getPos().y - player.getCenterOffset().y);
 	playerPoint.setRadius(6);
 	playerPoint.setFillColor(sf::Color::White);
 	playerPoint.setPosition(gameView.getCenter().x - 6, gameView.getCenter().y - 6);
@@ -295,6 +308,27 @@ void Game::draw()
 	window.draw(svTimeText);
 	// end current window frame and displays its content
 	window.display();
+}
+
+/// Prepares the different types of packets and send to server 
+void Game::sendPacketToServer(int messageType, bool inputPressed) {
+	sf::Packet packet;
+	packet << messageType;
+
+	if (messageType == Message::Ping) {
+		sendPingToServer();
+		return;
+	}
+	else {
+		if (messageType == Message::PlayerMoveLeft || messageType == Message::PlayerMoveRight ||
+			messageType == Message::PlayerMoveUp || messageType == Message::PlayerMoveDown) {
+			// prepares packet of input type
+			packet << svLastTimestamp << inputPressed;
+			// sends packet
+			net.sendUdpPacket(packet, Properties::ServerIP, Properties::ServerPort);
+		}
+			/*std::cout << "Unknown message type - Message not sent to server" << std::endl;*/
+	}
 }
 
 // sends ping packet to game server
@@ -324,6 +358,23 @@ void handlePacket(sf::Packet packet, sf::IpAddress sender, unsigned short port) 
 
 	if (messageType == Message::Ping) {
 		syncClock(packet);
+	} 
+	else if (messageType == Message::GameSync){
+		float x, y;
+		packet >> x >> y;
+		
+		// server reconciliation
+		float difX = player.getPos().x - x;
+		float difY = player.getPos().y - y;
+		//std::cout << difX << " , " << difY << std::endl;
+		if (difX > 0 || difY > 0) 
+			player.moveTo(x, y);
+
+		//player.moveTo(x, y, true, 0.1);
+		// interpolation to be used later - example (used with commented block in update)
+		finalPos.x = x; finalPos.y = y;
+		interpolIncX = (x - player.getPos().x) / (60.0f / SNAPSHOT_TICKRATE);
+		interpolIncY = (y - player.getPos().y) / (60.0f / SNAPSHOT_TICKRATE);
 	}
 }
 

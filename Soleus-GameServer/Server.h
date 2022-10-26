@@ -39,5 +39,6 @@ public:
 
 // handles packets received - called as a callback from network object
 void handlePacket(sf::Packet packet, sf::IpAddress sender, unsigned short port);
+void sendSnapshot();
 
 #endif
