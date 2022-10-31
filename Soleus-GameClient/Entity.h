@@ -13,6 +13,7 @@ class Entity
 		int maxHealth;  // max health of entity
 		int speed;		// entity speed
 		sf::Vector2f pos; // position of entity in the world
+		sf::Vector2f velocity; // current velocity of entity
 		sf::Sprite sprite; // entity current sprite
 		sf::Texture texture; // entity texture
 
@@ -29,8 +30,11 @@ class Entity
 		int getMaxHealth(); // gets entity max health
 		int getSpeed(); // gets entity speed
 		sf::Vector2f getPos(); // gets entity position in the world
+		sf::Vector2f getVelocity(); // gets entity velocity
 		sf::Vector2f getCenterOffset(); // gets entity center offset in relation to top-left position point of sprite
 		sf::Sprite getSprite(); // gets entity current sprite
+		void setVelocity(sf::Vector2f velocity); // sets entity velocity
+		void setVelocity(float vX, float vY); // sets entity velocity 
 		void move(sf::Vector2f offset); // moves entity by desired offset (Vector2f)
 		void move(float offsetX, float offsetY); // moves entity by desired offset (float values)
 		void moveTo(float x, float y); // moves entity to desired position

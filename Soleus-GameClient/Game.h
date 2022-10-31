@@ -39,8 +39,8 @@ class Game : public GameLoop
 
 		/// Draw the Game
 		virtual void draw() override;
-	private:
-		void sendPacketToServer(int messageType, bool inputPressed); /// Prepares the different types of packets and send to server 
+	//private:
+		void sendPacketToServer(int messageType); /// Prepares the different types of packets and send to server 
 		void sendPingToServer(); /// sends ping packet to the server
 };
 

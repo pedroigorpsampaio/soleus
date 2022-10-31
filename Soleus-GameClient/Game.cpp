@@ -1,5 +1,6 @@
 #include "Game.h"
 #include "Util.h"
+#include <list>    
 
 float speed = PLAYER_SPEED; // moving speed
 float zoomSpeed = 40.f; // zoom speed
@@ -18,8 +19,22 @@ sf::RenderTexture texture;
 TileMap map;
 // player
 Player player(100, 100, 128, sf::Vector2f(INIT_X, INIT_Y));
-sf::Vector2f initPos = player.getPos(), finalPos;
+// player client prediction and interpolation vars
+sf::Vector2f initPos = player.getPos(), finalPos, deltaPos(0,0);
+sf::Vector2f lastPos(INIT_X, INIT_Y);
 float interpolIncX = 0, interpolIncY = 0;
+
+struct PointInTime {
+	sf::Vector2f pos;
+	size_t key;
+	long long timestamp;
+
+	PointInTime(sf::Vector2f pos, size_t key, long long timestamp) {
+		this->pos = pos; this->key = key; this->timestamp = timestamp;
+	}
+};
+
+std::list<PointInTime> pitHistory;
 
 // Network object that bridges communication with server
 Networker net;
@@ -29,7 +44,9 @@ long long latency = 0;
 double pingTimer = 9999;
 int pingInterval = 5; // latency check interval in seconds
 long long svLastTimestamp = 0; // sv last timestamp
-
+float lastDT = 0.16f; // sv last delta time
+std::list<float> latencyHistory; // list of last latencies to calculate average latency
+int latWindowSize = 5; // size of latency window for average calc
 
 // fps text
 sf::Text pingText, fpsText, svTimeText;
@@ -40,8 +57,11 @@ sf::Text pingText, fpsText, svTimeText;
 //// pinger thread - pings server every {interval}
 //std::unique_ptr<sf::Thread> pingerThread;
 
+Game *instance;
 // constructor
-Game::Game() {}
+Game::Game() {
+	instance = this;
+}
 
 // loads game configurations - run at the start of game cycle
 bool Game::load() {
@@ -166,6 +186,8 @@ void Game::shutdown() {
 
 // updates game before drawing
 void Game::update(float dt) {
+	// updates last delta time
+	lastDT = dt;
 	// obesrves packets received by server - sends the callback to handle them
 	net.observe(handlePacket);
 
@@ -205,16 +227,38 @@ void Game::update(float dt) {
 		inputHandler.handleInput(event);
 
 		// key events -- send to server for proper processing
-		if (event.type == sf::Event::KeyPressed || event.type == sf::Event::KeyReleased) {
-			bool isPressed = event.type == sf::Event::KeyPressed ? true : false;
-			if (event.key.code == sf::Keyboard::Down || event.key.code == sf::Keyboard::S)
-				sendPacketToServer(Message::PlayerMoveDown, isPressed);
-			if (event.key.code == sf::Keyboard::Up || event.key.code == sf::Keyboard::W)
-				sendPacketToServer(Message::PlayerMoveUp, isPressed);
-			if (event.key.code == sf::Keyboard::Left || event.key.code == sf::Keyboard::A)
-				sendPacketToServer(Message::PlayerMoveLeft, isPressed);
-			if (event.key.code == sf::Keyboard::Right || event.key.code == sf::Keyboard::D)
-				sendPacketToServer(Message::PlayerMoveRight, isPressed);
+		//if (event.type == sf::Event::KeyPressed || event.type == sf::Event::KeyReleased) {
+		//	bool isPressed = event.type == sf::Event::KeyPressed ? true : false;
+		//	if (event.key.code == sf::Keyboard::Down || event.key.code == sf::Keyboard::S)
+		//		sendPacketToServer(Message::PlayerMoveDown, isPressed);
+		//	if (event.key.code == sf::Keyboard::Up || event.key.code == sf::Keyboard::W)
+		//		sendPacketToServer(Message::PlayerMoveUp, isPressed);
+		//	if (event.key.code == sf::Keyboard::Left || event.key.code == sf::Keyboard::A)
+		//		sendPacketToServer(Message::PlayerMoveLeft, isPressed);
+		//	if (event.key.code == sf::Keyboard::Right || event.key.code == sf::Keyboard::D)
+		//		sendPacketToServer(Message::PlayerMoveRight, isPressed);
+		//}
+
+		int vX = 0, vY = 0;
+		if (inputHandler.isKeyDown())
+			vY = 1;
+		if (inputHandler.isKeyUp())
+			vY = -1;
+		if (inputHandler.isKeyLeft())
+			vX = -1;
+		if (inputHandler.isKeyRight())
+			vX += 1;
+		// set player velocity
+		player.setVelocity(vX, vY);
+
+		// if player stopped moving, send move message (with no velocity) to stop player in server-side
+		if (event.type == sf::Event::KeyReleased || event.type == sf::Event::KeyPressed) {
+			if (event.key.code == sf::Keyboard::Down || event.key.code == sf::Keyboard::S
+				|| event.key.code == sf::Keyboard::Up || event.key.code == sf::Keyboard::W
+				|| event.key.code == sf::Keyboard::Left || event.key.code == sf::Keyboard::A
+				|| event.key.code == sf::Keyboard::Right || event.key.code == sf::Keyboard::D) {
+				sendPacketToServer(Message::PlayerMove);
+			}
 		}
 	}
 
@@ -225,31 +269,87 @@ void Game::update(float dt) {
 	//// handle movement
 
 	// input prediction
-	sf::Vector2f direction(0, 0);
-	if (inputHandler.isKeyDown())
-		direction.y = 1;
-	if (inputHandler.isKeyUp())
-		direction.y = -1;
-	if (inputHandler.isKeyLeft())
-		direction.x = -1;
-	if (inputHandler.isKeyRight())
-		direction.x += 1;
-
-	sf::Vector2f nDirection = util::normalize(direction);
+	sf::Vector2f nVelocity = util::normalize(player.getVelocity());
 	//std::cout << nDirection.x << "," << nDirection.y << std::endl;
-	player.move(nDirection.x * PLAYER_SPEED * dt, nDirection.y * PLAYER_SPEED * dt);
+	//std::cout << player.getPos().x << std::endl;
+	// if there is a movement
+	if (nVelocity.x != 0 || nVelocity.y != 0) {
+		// input prediction - move player
+		player.move(nVelocity.x * PLAYER_SPEED * dt, nVelocity.y * PLAYER_SPEED * dt);
 
-	// move by interpolated amount - to be used for other entities
+		//std::cout << player.getPos().x << std::endl;
+
+		// saves new movement in front of list of input movements to proper conciliate with the server in sync moments
+		pitHistory.push_front(PointInTime(player.getPos(), pitHistory.size()+1, svLastTimestamp));
+
+		//std::cout << svLastTimestamp << std::endl;
+
+		// sends packet to server to move player real position
+		//sendPacketToServer(Message::PlayerMove);
+
+		// only do smoothing while there is movement
+
+		// smooth pos difference between server and client, if there is any
+		//if (deltaPos.x != 0 || deltaPos.y != 0) {
+		//	sf::Vector2f sPos(player.getPos().x + deltaPos.x, player.getPos().y + deltaPos.y);
+		//	sf::Vector2f iPos = util::interpolate2v(player.getPos(), sPos);
+
+		//	float distance = util::distance(player.getPos().x, player.getPos().y, sPos.x, sPos.y);
+
+		//	if (distance > 0.1f && distance < 10.0f) {
+		//		sf::Vector2f v = util::normalize(deltaPos);
+		//		sf::Vector2f interpolatedPos = util::interpolate2v(player.getPos(), sf::Vector2f(sPos.x, sPos.y));
+		//		player.moveTo(player.getPos().x + (interpolIncX * dt), player.getPos().y + interpolIncY * dt);
+		//		player.moveTo(interpolatedPos.x, interpolatedPos.y);
+		//		deltaPos.x = sPos.x - player.getPos().x;
+		//		deltaPos.y = sPos.y - player.getPos().y;
+		//	}
+		//	else {
+		//		sf::Vector2f interpolatedPos = util::interpolate2v(player.getPos(), sf::Vector2f(finalPos.x, finalPos.y));
+		//		player.move(interpolIncX* dt, interpolIncY* dt);
+		//		player.moveTo(interpolatedPos.x, interpolatedPos.y); 
+		//		deltaPos.x = 0; deltaPos.y = 0; /*pitHistory.clear();*/
+		//	}
+
+			//distance = util::distance(player.getPos().x, player.getPos().y, finalPos.x, finalPos.y);
+
+			//if (distance > 0.25f) {
+			//	sf::Vector2f interpolatedPos = util::interpolate2v(player.getPos(), sf::Vector2f(finalPos.x, finalPos.y));
+			//	player.moveTo(interpolatedPos.x, interpolatedPos.y);
+			//}
+			//else { player.moveTo(finalPos.x, finalPos.y); }
+
+			//std::cout << distance << "," << deltaPos.y << std::endl;
+		//}
+
+		//float svDiffX = player.getPos().x - finalPos.x;
+		//std::cout << "sv diff: " << svDiffX << std::endl;
+	}
+
+	// (FINAL SERVER POSITION) move by interpolated amount - to be used for other entities
 	//float distance = util::distance(player.getPos().x, player.getPos().y, finalPos.x, finalPos.y);
 
 	//if (distance > 0.25f) {
 	//	if (player.getPos().x != finalPos.x)
-	//		player.move(interpolIncX, 0.f);
+	//		player.move(interpolIncX * dt, 0.f);
 	//	if (player.getPos().y != finalPos.y)
-	//		player.move(0.f, interpolIncY);
+	//		player.move(0.f, interpolIncY * dt);
 	//}
 	//else { player.moveTo(finalPos.x, finalPos.y); }
 
+	// (PING INCLUDED DIFF SERVER POSITION) move by interpolated amount
+	float distance = util::distance(player.getPos().x, player.getPos().y, lastPos.x, lastPos.y);
+
+	if (distance > 0.5f) {
+		if (player.getPos().x != lastPos.x)
+			player.move(interpolIncX * dt, 0.f);
+		if (player.getPos().y != lastPos.y)
+			player.move(0.f, interpolIncY * dt);
+	}
+	else { player.moveTo(lastPos.x, lastPos.y); }
+
+	//float svDiffX = player.getPos().x - lastPos.x;
+	//std::cout << "sv diff: " << svDiffX << std::endl;
 
 	// centers map based on player 
 	sf::Vector2f centeredPlayerPos(player.getPos().x + player.getCenterOffset().x,
@@ -311,7 +411,7 @@ void Game::draw()
 }
 
 /// Prepares the different types of packets and send to server 
-void Game::sendPacketToServer(int messageType, bool inputPressed) {
+void Game::sendPacketToServer(int messageType) {
 	sf::Packet packet;
 	packet << messageType;
 
@@ -320,10 +420,18 @@ void Game::sendPacketToServer(int messageType, bool inputPressed) {
 		return;
 	}
 	else {
-		if (messageType == Message::PlayerMoveLeft || messageType == Message::PlayerMoveRight ||
-			messageType == Message::PlayerMoveUp || messageType == Message::PlayerMoveDown) {
+		if (messageType == Message::PlayerMove) {
+			// gets input key (for server reconciliation of client prediction later)
+			size_t key = 0;
+			//key = pitHistory.front().key;
+			if (pitHistory.size() > 0) {
+				for (PointInTime pH : pitHistory) {
+					key = pH.key;
+					break;
+				}
+			}
 			// prepares packet of input type
-			packet << svLastTimestamp << inputPressed;
+			packet << svLastTimestamp << player.getVelocity().x  << player.getVelocity().y << key;
 			// sends packet
 			net.sendUdpPacket(packet, Properties::ServerIP, Properties::ServerPort);
 		}
@@ -341,7 +449,7 @@ void Game::sendPingToServer() {
 	// Convert time_point to signed integral type
 	auto timestamp = now.time_since_epoch().count();
 	// Convert signed integral type to time_point
-	sys_milliseconds time{ sys_milliseconds::duration{timestamp} };
+	//sys_milliseconds time{ sys_milliseconds::duration{timestamp} };
 
 	// placehold ping packet
 	sf::Packet packet;
@@ -360,21 +468,79 @@ void handlePacket(sf::Packet packet, sf::IpAddress sender, unsigned short port) 
 		syncClock(packet);
 	} 
 	else if (messageType == Message::GameSync){
+		//instance->sendPacketToServer(Message::PlayerMove);
 		float x, y;
-		packet >> x >> y;
+		size_t lastInput; 
+		long long svTimestamp; // sv timestamp of when packet was sent
+		packet >> x >> y >> lastInput >> svTimestamp;
 		
-		// server reconciliation
-		float difX = player.getPos().x - x;
-		float difY = player.getPos().y - y;
-		//std::cout << difX << " , " << difY << std::endl;
-		if (difX > 0 || difY > 0) 
-			player.moveTo(x, y);
+		// approximation of timestamp when last input was processed
+		//long long lastTime = svLastTimestamp - (latency/2);
+		//std::cout << "why im here with lag??? high ping??? wtf :: " << svTimestamp << std::endl;
+		// if found the last action to sync drift
+		bool found = false;
+		// finds correct input to calculate sv delta pos
+		if (pitHistory.size() > 0) {
+			for (PointInTime n : pitHistory) {
+				//std::cout << lastInput << " / " << n.key << " -> " << n.pos.x << " , " << x << " | tk: " << n.timestamp << " : ts: " << svTimestamp << std::endl;
+				if (n.timestamp < svTimestamp) {
+					found = true;
+					//std::cout << "dif delta : " << player.getPos().x - n.pos.x << std::endl;
+					lastPos = n.pos;
+					
+					//std::cout << lastInput << " / " << n.key << " -> " << n.pos.x << " , " << x << " | tk: " << n.timestamp << " : ts: " << lastTime << std::endl;
+					break;
+					//std::cout << lastInput << " -> " << player.getPos().x << " , " << x << std::endl;
+				}
+			}
+			if (!found) // if not found a prior action from client to match server time of packet, get the oldest one
+				lastPos = pitHistory.back().pos;
 
-		//player.moveTo(x, y, true, 0.1);
+			pitHistory.clear(); // when sync action is found, clear history and use the found position to calculate drift 
+			float difX = x - lastPos.x;
+
+			//std::cout << difX << std::endl;
+			//std::cout << std::endl;
+		}
+
+		//std::cout << svTimestamp << " / " << lastTime << std::endl;
+
+		// drift calculation for
+		// server reconciliation
+		float difX = x - lastPos.x;
+
+		//std::cout << difX << std::endl;
+
+		float difY = y - lastPos.y;
 		// interpolation to be used later - example (used with commented block in update)
 		finalPos.x = x; finalPos.y = y;
-		interpolIncX = (x - player.getPos().x) / (60.0f / SNAPSHOT_TICKRATE);
-		interpolIncY = (y - player.getPos().y) / (60.0f / SNAPSHOT_TICKRATE);
+		interpolIncX = ((difX) / (60.0f / SNAPSHOT_TICKRATE)) ;
+		interpolIncY = ((difY) / (60.0f / SNAPSHOT_TICKRATE)) ;
+		if (difX != 0 || difY != 0) {
+			//float distance = util::distance(player.getPos().x, player.getPos().y, x, y);
+
+			//if (distance > 0.25f) {
+			//	sf::Vector2f interpolatedPos = util::interpolate2v(player.getPos(), sf::Vector2f(x, y));
+			//	player.moveTo(interpolatedPos.x, interpolatedPos.y);
+			//}
+			//else { player.moveTo(x, y); }
+		}
+
+		deltaPos.x = difX;
+		deltaPos.y = difY;
+
+		// Print out the list
+		if (pitHistory.size() > 0) {
+			//std::cout << "sv_late: " << x << "," << y << std::endl;
+
+			//std::cout << "l = { ";
+			//for (PointInTime n : pitHistory)
+			//	std::cout << "(" << n.pos.x << "," << n.pos.y << ")" << ", ";
+			//std::cout << "};\n";
+
+			// clears list of point in time inputs to restart input storage
+			/*pitHistory.clear();*/
+		}
 	}
 }
 
@@ -407,8 +573,21 @@ void syncClock(sf::Packet packet) {
 	//// Convert signed integral type to time_point
 	//sys_milliseconds syncTime{ sys_milliseconds::duration{syncTimestamp} };
 
+	// updates latency history for the defined window size
+	latencyHistory.push_front(latency);
+	// pops oldest latency data if surpasses window size
+	if (latencyHistory.size() > latWindowSize)
+		latencyHistory.pop_back();
+
+	// calculate average of latency in defined window size
+	int avgLat = 0, acc = 0;
+	for (int l : latencyHistory) {
+		acc += l;
+	}
+	avgLat = acc / latencyHistory.size();
+
 	std::stringstream ss;
-	ss << "Ping: " << latency << "ms" << std::endl;
+	ss << "Ping: " << avgLat << "ms" << std::endl;
 	std::string pingStr = ss.str();
 	pingText.setString(pingStr);
 }

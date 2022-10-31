@@ -7,7 +7,7 @@ static const int TILESIZE = 32;
 static const int INIT_X = 300;
 static const int INIT_Y = 300;
 static const int PLAYER_SPEED = 100;
-static const int SNAPSHOT_TICKRATE = 4; // SNAPSHOT (SERVER STATE) SENT PER SECOND
+static const int SNAPSHOT_TICKRATE = 20; // SNAPSHOT (SERVER STATE) SENT PER SECOND
 
 /// format timestamp into a string of date and time
 std::string getDateTime(std::chrono::time_point<std::chrono::system_clock> timestamp)
@@ -39,6 +39,14 @@ namespace util {
 			return nV;
 		}
 		return v;
+	}
+
+	/// interpolate two vectors 2d with the average of the sum (50% interpolation)
+	sf::Vector2<float> interpolate2v(sf::Vector2<float> v1, sf::Vector2<float> v2)
+	{
+		sf::Vector2<float> iV;
+		iV = (v1 + v2) / 2.f;
+		return iV;
 	}
 }
 

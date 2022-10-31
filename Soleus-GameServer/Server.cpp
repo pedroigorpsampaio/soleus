@@ -24,8 +24,12 @@ Server::Server() {}
 // player moving data
 bool right = false, left = false, up = false, down = false;
 sf::Vector2f playerPos(INIT_X, INIT_Y);
+sf::Vector2f lastPos(INIT_X, INIT_Y);
 double snapshotTimer = 9999;
 bool stateChanged = false;
+sf::Vector2f velocity(0, 0);
+size_t lastInput = 0;
+
 
 // loads server configurations - run at the start of loop cycle
 bool Server::load() {
@@ -65,24 +69,20 @@ void Server::update(float dt) {
 		if (event.type == sf::Event::Closed)
 			window.close();
 	}
-	
+
 	// updates player position
 	// gets input first to normalize it before applying movement (avoid faster diagonals)
-	sf::Vector2f direction(0, 0);
-	if (down)
-		direction.y = 1;
-	if (up)
-		direction.y = -1;
-	if (left)
-		direction.x = -1;
-	if (right)
-		direction.x += 1;
 
-	sf::Vector2f nDirection = util::normalize(direction);
-	//std::cout << nDirection.x << "," << nDirection.y << std::endl;
-	playerPos.x += nDirection.x * PLAYER_SPEED * dt;
-	playerPos.y += nDirection.y * PLAYER_SPEED * dt;
-	//std::cout << playerPos.x << "," << playerPos.y << std::endl;
+	// moves player if there is movement
+	if (velocity.x != 0 || velocity.y != 0) {
+		sf::Vector2f nVelocity = util::normalize(velocity);
+		lastPos.x = playerPos.x; lastPos.y = playerPos.y; // stores player last pos
+		playerPos.x += nVelocity.x * PLAYER_SPEED * dt; // not using dt because of sleep for ping simulation
+		playerPos.y += nVelocity.y * PLAYER_SPEED * dt; // not using dt because of sleep for ping simulation
+	}
+
+	//std::cout << playerPos.x << std::endl;
+
 	//if (down)
 	//	playerPos.y += PLAYER_SPEED * dt;
 	//if (up)
@@ -131,10 +131,21 @@ void Server::draw() {
 }
 
 void sendSnapshot() {
-
 	sf::Packet snapshotPacket;
-	snapshotPacket << Message::GameSync << playerPos.x << playerPos.y;
+	// updates server time
+	using namespace std::chrono;
+	// Get current time with precision of milliseconds
+	auto now = time_point_cast<milliseconds>(system_clock::now());
+	// sys_milliseconds is type time_point<system_clock, milliseconds>
+	using sys_milliseconds = decltype(now);
+	// Convert time_point to signed integral type
+	auto svTimestamp = now.time_since_epoch().count();
 
+	snapshotPacket << Message::GameSync << playerPos.x << playerPos.y << lastInput << svTimestamp;
+
+	//using namespace std::this_thread;     // sleep_for, sleep_until
+	//using namespace std::chrono_literals; // ns, us, ms, s, h, etc.
+	//sleep_for(100ms);
 	// sends packet reply to client
 	net.sendUdpPacket(snapshotPacket, "192.168.0.92", Properties::ClientPort);
 
@@ -143,9 +154,6 @@ void sendSnapshot() {
 
 // handles packets received - called as a callback from network object
 void handlePacket(sf::Packet packet, sf::IpAddress sender, unsigned short port) {
-	//using namespace std::this_thread;     // sleep_for, sleep_until
-	//using namespace std::chrono_literals; // ns, us, ms, s, h, etc.
-	//sleep_for(500ms);
 	int messageType; // message type
 	long long clTimestamp; // client timestamp
 
@@ -162,27 +170,32 @@ void handlePacket(sf::Packet packet, sf::IpAddress sender, unsigned short port) 
 		// Convert time_point to signed integral type
 		auto svTimestamp = now.time_since_epoch().count();
 		// Convert signed integral type to time_point
-		sys_milliseconds time{ sys_milliseconds::duration{svTimestamp} };
+		//sys_milliseconds time{ sys_milliseconds::duration{svTimestamp} };
 
 		sf::Packet reply;
 		reply << Message::Ping << clTimestamp << svTimestamp;
 
+		//using namespace std::this_thread;     // sleep_for, sleep_until
+		//using namespace std::chrono_literals; // ns, us, ms, s, h, etc.
+		//sleep_for(100ms);
 		// sends packet reply to client
 		net.sendUdpPacket(reply, sender, Properties::ClientPort);
 	}
 	else {
-		bool isPressed;
-		packet >> isPressed;
-		//std::cout << "Input: " << messageType << " : " << isPressed << std::endl;
+		float vX, vY;
+		size_t key;
+		packet >> vX >> vY >> key;
 
-		if (messageType == Message::PlayerMoveLeft) 
-			left = isPressed;
-		else if (messageType == Message::PlayerMoveRight)
-			right = isPressed;
-		else if (messageType == Message::PlayerMoveUp)
-			up = isPressed;
-		else if (messageType == Message::PlayerMoveDown)
-			down = isPressed;
+		if (messageType == Message::PlayerMove) {
+			velocity.x = vX; velocity.y = vY; // set player velocity values
+			lastInput = key; // key of the last processed input (to be sent back to client for server reconciliation)
+			// std::cout << velocity.x << " , " << velocity.y << std::endl;
+
+			// if no movement, it is a stop moving command; send player one step back
+			//if (vX == 0 && vY == 0) {
+			//	playerPos.x = lastPos.x; playerPos.y = lastPos.y;
+			//}
+		}
 
 		stateChanged = true;
 	}

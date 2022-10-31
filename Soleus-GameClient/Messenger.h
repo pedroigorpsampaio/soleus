@@ -12,10 +12,7 @@ namespace Message
 		//---------------------------------------------
 		ClientConnected,    ///< (int)playerIndex
 		GameStarted,
-		PlayerMoveLeft,        ///< (bool)value
-		PlayerMoveRight,    ///< (bool)value
-		PlayerMoveUp,    ///< (bool)value
-		PlayerMoveDown,    ///< (bool)value
+		PlayerMove,        ///< (bool)value
 		Ping, // ping message
 		GameSync
 	};
