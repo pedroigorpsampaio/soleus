@@ -8,7 +8,7 @@ static const int TILESIZE = 32;
 static const int INIT_X = 300;
 static const int INIT_Y = 300;
 static const int PLAYER_SPEED = 100;
-static const int SNAPSHOT_TICKRATE = 20; // SNAPSHOT (SERVER STATE) SENT PER SECOND
+static const int SNAPSHOT_TICKRATE = 4; // SNAPSHOT (SERVER STATE) SENT PER SECOND
 
 /// format timestamp into a string of date and time
 std::string getDateTime(std::chrono::time_point<std::chrono::system_clock> timestamp)

@@ -1,6 +1,7 @@
 #include "Game.h"
 #include "Util.h"
 #include <list>    
+#include "Creature.h"
 
 float speed = PLAYER_SPEED; // moving speed
 float zoomSpeed = 40.f; // zoom speed
@@ -50,6 +51,12 @@ int latWindowSize = 5; // size of latency window for average calc
 
 // fps text
 sf::Text pingText, fpsText, svTimeText;
+
+
+// example creature
+Creature demon(100, 100, 128, sf::Vector2f(0, 0));
+// list of game active/alive creatures (temporary - to be later refactored when implementing AOI area of interest) 
+std::list<Creature> creatures;
 
 // mutex for multithreading data protection
 //sf::Mutex mutex;
@@ -387,6 +394,10 @@ void Game::draw()
 	playerPoint.setFillColor(sf::Color::White);
 	playerPoint.setPosition(gameView.getCenter().x - 6, gameView.getCenter().y - 6);
 
+	// enemy sprite example
+	sf::Sprite creatureExample = demon.getSprite();
+	creatureExample.setPosition(demon.getPos().x - demon.getCenterOffset().x, demon.getPos().y - demon.getCenterOffset().y);
+
 	// clear the window to start rendering it
 	window.clear();
 	// draw game view
@@ -395,6 +406,7 @@ void Game::draw()
 	sf::Sprite sprite(texture.getTexture());
 	window.draw(sprite);
 	window.draw(playerExample);
+	window.draw(creatureExample);
 	//window.draw(map);
 	// draw texture for minimap view
 	window.setView(miniMapView);
@@ -469,11 +481,14 @@ void handlePacket(sf::Packet packet, sf::IpAddress sender, unsigned short port) 
 	} 
 	else if (messageType == Message::GameSync){
 		//instance->sendPacketToServer(Message::PlayerMove);
-		float x, y;
+		float x, y, cPosX, cPosY;
 		size_t lastInput; 
 		long long svTimestamp; // sv timestamp of when packet was sent
-		packet >> x >> y >> lastInput >> svTimestamp;
+		packet >> x >> y >> lastInput >> svTimestamp >> cPosX >> cPosY;
 		
+		// creature example
+		demon.moveTo(cPosX, cPosY);
+
 		// approximation of timestamp when last input was processed
 		//long long lastTime = svLastTimestamp - (latency/2);
 		//std::cout << "why im here with lag??? high ping??? wtf :: " << svTimestamp << std::endl;

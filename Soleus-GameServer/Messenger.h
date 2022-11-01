@@ -12,9 +12,10 @@ namespace Message
 		//---------------------------------------------
 		ClientConnected,    ///< (int)playerIndex
 		GameStarted,
-		PlayerMove,        ///< (bool)value
-		Ping, // ping message
-		GameSync
+		PlayerClick, /// player input of click type with position data and timestamp
+		PlayerMove,  /// player input of the move type with velocity data and timestamp
+		Ping, /// ping message with timestamps to calculate latency
+		GameSync /// sync message containing information about other entities and items
 	};
 }
 

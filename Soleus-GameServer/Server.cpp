@@ -1,6 +1,8 @@
 #include "Server.h"
 #include <thread>
 #include "Util.h"
+#include "Creature.h"
+#include <list>
 
 // timers
 std::chrono::time_point<std::chrono::system_clock> timer = std::chrono::system_clock::now();
@@ -30,6 +32,11 @@ bool stateChanged = false;
 sf::Vector2f velocity(0, 0);
 size_t lastInput = 0;
 
+// example creature
+Creature demon(100, 100, 10, sf::Vector2f(INIT_X+50, INIT_Y+50));
+// list of game active/alive creatures (temporary - to be later refactored when implementing AOI area of interest) 
+std::list<Creature> creatures;
+
 
 // loads server configurations - run at the start of loop cycle
 bool Server::load() {
@@ -51,6 +58,9 @@ bool Server::load() {
 	svTimeText.setFillColor(sf::Color::White);
 	// set the text style
 	svTimeText.setStyle(sf::Text::Bold);
+
+	// adds creature text to the list of alive creatures
+	creatures.push_front(demon);
 
 	return true;
 }
@@ -80,6 +90,9 @@ void Server::update(float dt) {
 		playerPos.x += nVelocity.x * PLAYER_SPEED * dt; // not using dt because of sleep for ping simulation
 		playerPos.y += nVelocity.y * PLAYER_SPEED * dt; // not using dt because of sleep for ping simulation
 	}
+
+	// moves example creature (test)
+	demon.move(demon.getSpeed() * dt, 0.f);
 
 	//std::cout << playerPos.x << std::endl;
 
@@ -141,7 +154,12 @@ void sendSnapshot() {
 	// Convert time_point to signed integral type
 	auto svTimestamp = now.time_since_epoch().count();
 
-	snapshotPacket << Message::GameSync << playerPos.x << playerPos.y << lastInput << svTimestamp;
+	// sends only coords of the only example creature (demon) - to be refactored 
+	// REFACTOR: Create a snapshot class that is packeable/unpackeable with all active entities
+	// and items in aoi of player, alongside with player server data
+
+	snapshotPacket << Message::GameSync << playerPos.x << playerPos.y << lastInput << svTimestamp
+		<< demon.getPos().x << demon.getPos().y;
 
 	//using namespace std::this_thread;     // sleep_for, sleep_until
 	//using namespace std::chrono_literals; // ns, us, ms, s, h, etc.
