@@ -273,7 +273,10 @@ void Game::update(float dt) {
 	if(inputHandler.isClosing())
 		window.close();
 
-	//// handle movement
+	/// handle movement
+	
+	// update entities
+	demon.update(dt);
 
 	// input prediction
 	sf::Vector2f nVelocity = util::normalize(player.getVelocity());
@@ -387,32 +390,29 @@ void Game::draw()
 	texture.display();
 
 	// player sprites and minimap pinpoint
-	sf::Sprite playerExample = player.getSprite();
 	sf::CircleShape playerPoint;
-	playerExample.setPosition(player.getPos().x - player.getCenterOffset().x, player.getPos().y - player.getCenterOffset().y);
 	playerPoint.setRadius(6);
 	playerPoint.setFillColor(sf::Color::White);
 	playerPoint.setPosition(gameView.getCenter().x - 6, gameView.getCenter().y - 6);
-
-	// enemy sprite example
-	sf::Sprite creatureExample = demon.getSprite();
-	creatureExample.setPosition(demon.getPos().x - demon.getCenterOffset().x, demon.getPos().y - demon.getCenterOffset().y);
 
 	// clear the window to start rendering it
 	window.clear();
 	// draw game view
 	window.setView(gameView);
+
 	// Draw the texture for game view
 	sf::Sprite sprite(texture.getTexture());
 	window.draw(sprite);
-	window.draw(playerExample);
-	window.draw(creatureExample);
-	//window.draw(map);
+
+	// draw entities
+	player.draw(window); // draw player
+	demon.draw(window); // draw demon example of creature
+
 	// draw texture for minimap view
 	window.setView(miniMapView);
 	window.draw(sprite);
 	window.draw(playerPoint);
-	//window.draw(map);
+
 	// draw in ui view
 	window.setView(uiView);
 	window.draw(pingText);
@@ -486,8 +486,8 @@ void handlePacket(sf::Packet packet, sf::IpAddress sender, unsigned short port) 
 		long long svTimestamp; // sv timestamp of when packet was sent
 		packet >> x >> y >> lastInput >> svTimestamp >> cPosX >> cPosY;
 		
-		// creature example
-		demon.moveTo(cPosX, cPosY);
+		// interpolate creature example
+		demon.interpolate(cPosX, cPosY);
 
 		// approximation of timestamp when last input was processed
 		//long long lastTime = svLastTimestamp - (latency/2);
