@@ -8,8 +8,7 @@
 
 class Entity
 {
-
-	protected:
+	public:
 		int health;		// current health of entity
 		int maxHealth;  // max health of entity
 		int speed;		// entity speed
@@ -19,7 +18,6 @@ class Entity
 		sf::Texture texture; // entity texture
 		bool active; // is entity active 
 
-	public:
 		enum Event {	// enum that represent possible events that can happen to entities
 			MoveUp = 1 << 0,
 			MoveDown = 1 << 1,

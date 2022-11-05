@@ -133,6 +133,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Networker.cpp" />
     <ClCompile Include="Server.cpp" />
+    <ClCompile Include="State.cpp" />
     <ClCompile Include="Util.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -143,6 +144,7 @@
     <ClInclude Include="Messenger.h" />
     <ClInclude Include="Networker.h" />
     <ClInclude Include="Server.h" />
+    <ClInclude Include="State.h" />
     <ClInclude Include="Util.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

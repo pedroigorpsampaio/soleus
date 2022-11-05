@@ -3,6 +3,7 @@
 #include "Util.h"
 #include "Creature.h"
 #include <list>
+#include "State.h"
 
 // timers
 std::chrono::time_point<std::chrono::system_clock> timer = std::chrono::system_clock::now();
@@ -158,8 +159,18 @@ void sendSnapshot() {
 	// REFACTOR: Create a snapshot class that is packeable/unpackeable with all active entities
 	// and items in aoi of player, alongside with player server data
 
-	snapshotPacket << Message::GameSync << playerPos.x << playerPos.y << lastInput << svTimestamp
+	State state;
+	state.nEntities = 1;
+	state.nTiles = 0;
+	//state.player = Entity();
+	state.player.moveTo(playerPos.x, playerPos.y);
+	state.entities.push_back(demon);
+
+	/*snapshotPacket << Message::GameSync << playerPos.x << playerPos.y << lastInput << svTimestamp
 		<< demon.getPos().x << demon.getPos().y;
+*/
+
+	snapshotPacket << Message::GameSync << state << lastInput << svTimestamp;
 
 	//using namespace std::this_thread;     // sleep_for, sleep_until
 	//using namespace std::chrono_literals; // ns, us, ms, s, h, etc.

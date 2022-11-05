@@ -142,6 +142,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Networker.cpp" />
     <ClCompile Include="Player.cpp" />
+    <ClCompile Include="State.cpp" />
     <ClCompile Include="TileMap.cpp" />
     <ClCompile Include="Util.cpp" />
   </ItemGroup>
@@ -158,6 +159,7 @@
     <ClInclude Include="Messenger.h" />
     <ClInclude Include="Networker.h" />
     <ClInclude Include="Player.h" />
+    <ClInclude Include="State.h" />
     <ClInclude Include="TileMap.h" />
     <ClInclude Include="Util.h" />
   </ItemGroup>

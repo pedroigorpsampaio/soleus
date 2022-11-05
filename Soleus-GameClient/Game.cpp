@@ -2,6 +2,7 @@
 #include "Util.h"
 #include <list>    
 #include "Creature.h"
+#include "State.h"
 
 float speed = PLAYER_SPEED; // moving speed
 float zoomSpeed = 40.f; // zoom speed
@@ -122,7 +123,7 @@ bool Game::load() {
 
 
 	// define the level with an array of tile indices
-	const int level[] =
+	int level[] =
 	{
 		0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
 		0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
@@ -484,7 +485,11 @@ void handlePacket(sf::Packet packet, sf::IpAddress sender, unsigned short port) 
 		float x, y, cPosX, cPosY;
 		size_t lastInput; 
 		long long svTimestamp; // sv timestamp of when packet was sent
-		packet >> x >> y >> lastInput >> svTimestamp >> cPosX >> cPosY;
+		State state; // state containing all sv snapshot data important to the player
+		//packet >> x >> y >> lastInput >> svTimestamp >> cPosX >> cPosY;
+		packet >> state >> lastInput >> svTimestamp;
+		x = state.player.pos.x; y = state.player.pos.y;
+		cPosX = state.entities.at(0).pos.x; cPosY = state.entities.at(0).pos.y;
 		
 		// interpolate creature example
 		demon.interpolate(cPosX, cPosY);

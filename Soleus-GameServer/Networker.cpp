@@ -45,3 +45,63 @@ void Networker::receiveUdpPacket(void(*handlePacket)(sf::Packet, sf::IpAddress, 
 		handlePacket(packet, sender, port); // calls the callback received as an argument passing the packet and sender data
 	}
 }
+
+//////////////// PACKING AND UNPACKING ///////////////////
+
+/// packs entity into packet
+sf::Packet& operator<<(sf::Packet& packet, Entity& entity)
+{
+	return packet << entity.health << entity.maxHealth << entity.pos.x << entity.pos.y;
+}
+
+/// unpacks entity from packet
+sf::Packet& operator>>(sf::Packet& packet, Entity& entity)
+{
+	return packet >> entity.health >> entity.maxHealth >> entity.pos.x >> entity.pos.y;
+}
+
+/// packs state into packet
+sf::Packet& operator<<(sf::Packet& packet, State& state)
+{
+	// player
+	packet << state.player;
+
+	// sizes of arrays packed
+	packet << state.nTiles << state.nEntities;
+
+	// tiles visible for player
+	for (int i = 0; i < state.nTiles; i++)
+		packet << state.tiles.at(i);
+
+	// entities visible for player
+	for (int i = 0; i < state.nEntities; i++)
+		packet << state.entities.at(i);
+
+	return packet;
+}
+
+/// unpacks state from packet
+sf::Packet& operator>>(sf::Packet& packet, State& state)
+{
+	// player
+	packet >> state.player;
+
+	// sizes of arrays packed
+	packet >> state.nTiles >> state.nEntities;
+
+	// tiles visible for player
+	for (int i = 0; i < state.nTiles; i++) {
+		int t;
+		packet >> t;
+		state.tiles.push_back(t);
+	}
+
+	// entities visible for player
+	for (int i = 0; i < state.nEntities; i++) {
+		Entity e;
+		packet >> e;
+		state.entities.push_back(e);
+	}
+
+	return packet;
+}

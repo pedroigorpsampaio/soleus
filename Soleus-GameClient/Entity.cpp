@@ -1,7 +1,9 @@
 #include "Entity.h"
 #include "Util.h"
+#include <iostream>
 
 float incX, incY; // interpolation increments
+float fps; // current game fps
 
 Entity::Entity() {
 	health = 100; maxHealth = 100; speed = 100; pos = sf::Vector2f(0, 0); velocity = sf::Vector2f(0, 0);
@@ -82,14 +84,14 @@ void Entity::moveTo(float x, float y)
 
 void Entity::interpolate(float x, float y) {
 	this->goal = sf::Vector2f(x, y);
-	incX = (x - pos.x) / (60.0f / SNAPSHOT_TICKRATE);
-	incY = (y - pos.y) / (60.0f / SNAPSHOT_TICKRATE);
+	incX = (x - pos.x) / (fps / SNAPSHOT_TICKRATE);
+	incY = (y - pos.y) / (fps / SNAPSHOT_TICKRATE);
 }
 
 void Entity::interpolate(sf::Vector2f goal) {
 	this->goal = goal;
-	incX = (goal.x - pos.x) / (60.0f / SNAPSHOT_TICKRATE);
-	incY = (goal.y - pos.y) / (60.0f / SNAPSHOT_TICKRATE);
+	incX = (goal.x - pos.x) / (fps / SNAPSHOT_TICKRATE);
+	incY = (goal.y - pos.y) / (fps / SNAPSHOT_TICKRATE);
 }
 
 int Entity::react(Entity source, Event event)
@@ -102,9 +104,16 @@ void Entity::load(sf::Texture& texture) {
 
 // updates entity 
 void Entity::update(float dt) {
-	if (incX > 10 || incY > 10)
+	// updates fps
+	fps = 1.0f / dt;
+
+	// calculates distance
+	float distance = util::distance(pos.x, pos.y, goal.x, goal.y);
+
+	// moves entity direct to goal destination if it is too far
+	if (distance > 20.f)
 		this->moveTo(goal.x, goal.y);
-	else
+	else // moves incrementally for interpolation between server snapshots
 		this->move(incX, incY);
 }
 

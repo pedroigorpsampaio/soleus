@@ -2,6 +2,7 @@
 #define NETWORKER_H
 
 #include "Messenger.h"
+#include "State.h"
 
 class Networker : public Messenger {
 	public:
@@ -19,5 +20,15 @@ class Networker : public Messenger {
 		// Receieves udp packets and alerts callback
 		virtual void receiveUdpPacket(void(*handlePacket)(sf::Packet, sf::IpAddress, unsigned short)) override;
 };
+
+//////////////// PACKING AND UNPACKING ///////////////////
+/// packs entity into packet
+sf::Packet& operator<<(sf::Packet& packet, Entity& entity);
+/// unpacks entity from packet
+sf::Packet& operator>>(sf::Packet& packet, Entity& entity);
+/// packs state into packet
+sf::Packet& operator<<(sf::Packet& packet, State& state);
+/// unpacks state from packet
+sf::Packet& operator>>(sf::Packet& packet, State& state);
 
 #endif
