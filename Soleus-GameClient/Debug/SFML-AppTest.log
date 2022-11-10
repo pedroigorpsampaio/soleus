@@ -112,17 +112,147 @@ C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\TileMap.h(44,41): warning C
 C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\TileMap.h(44,41): warning C4244:         [
 C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\TileMap.h(44,41): warning C4244:             T=float
 C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\TileMap.h(44,41): warning C4244:         ]
-C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\Game.cpp(204,13): warning C4244:  'inicializando': conversão de 'float' para 'long', possível perda de dados
-C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\Game.cpp(227,10): warning C4244:  'inicializando': conversão de 'float' para 'int', possível perda de dados
-C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\Game.cpp(260,26): warning C4244:  'argumento': conversão de 'int' para 'float', possível perda de dados
-C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\Game.cpp(260,22): warning C4244:  'argumento': conversão de 'int' para 'float', possível perda de dados
-C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\Game.cpp(597,28): warning C4244:  'argumento': conversão de '__int64' para 'const _Ty', possível perda de dados
-C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\Game.cpp(597,28): warning C4244:         with
-C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\Game.cpp(597,28): warning C4244:         [
-C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\Game.cpp(597,28): warning C4244:             _Ty=float
-C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\Game.cpp(597,28): warning C4244:         ]
-C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\Game.cpp(599,28): warning C4018:  '>': incompatibilidade de signed/unsigned
-  Networker.cpp
-  Gerando Código...
-C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\Game.cpp(604,29): warning C4244:  'inicializando': conversão de 'float' para 'int', possível perda de dados
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\SFMLOrthogonalLayer.hpp(213,21): warning C4018:  '<': incompatibilidade de signed/unsigned
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\SFMLOrthogonalLayer.hpp(277,26): warning C4244:  '=': conversão de 'T' para 'T', possível perda de dados
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\SFMLOrthogonalLayer.hpp(277,26): warning C4244:         with
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\SFMLOrthogonalLayer.hpp(277,26): warning C4244:         [
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\SFMLOrthogonalLayer.hpp(277,26): warning C4244:             T=int
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\SFMLOrthogonalLayer.hpp(277,26): warning C4244:         ]
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\SFMLOrthogonalLayer.hpp(277,26): warning C4244:         and
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\SFMLOrthogonalLayer.hpp(277,26): warning C4244:         [
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\SFMLOrthogonalLayer.hpp(277,26): warning C4244:             T=float
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\SFMLOrthogonalLayer.hpp(277,26): warning C4244:         ]
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\SFMLOrthogonalLayer.hpp(278,26): warning C4244:  '=': conversão de 'T' para 'T', possível perda de dados
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\SFMLOrthogonalLayer.hpp(278,26): warning C4244:         with
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\SFMLOrthogonalLayer.hpp(278,26): warning C4244:         [
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\SFMLOrthogonalLayer.hpp(278,26): warning C4244:             T=int
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\SFMLOrthogonalLayer.hpp(278,26): warning C4244:         ]
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\SFMLOrthogonalLayer.hpp(278,26): warning C4244:         and
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\SFMLOrthogonalLayer.hpp(278,26): warning C4244:         [
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\SFMLOrthogonalLayer.hpp(278,26): warning C4244:             T=float
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\SFMLOrthogonalLayer.hpp(278,26): warning C4244:         ]
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\SFMLOrthogonalLayer.hpp(336,34): warning C4244:  'argumento': conversão de 'size_t' para 'T', possível perda de dados
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\SFMLOrthogonalLayer.hpp(336,34): warning C4244:         with
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\SFMLOrthogonalLayer.hpp(336,34): warning C4244:         [
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\SFMLOrthogonalLayer.hpp(336,34): warning C4244:             T=float
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\SFMLOrthogonalLayer.hpp(336,34): warning C4244:         ]
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\SFMLOrthogonalLayer.hpp(339,68): warning C4244:  'argumento': conversão de 'uint32_t' para 'T', possível perda de dados
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\SFMLOrthogonalLayer.hpp(339,68): warning C4244:         with
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\SFMLOrthogonalLayer.hpp(339,68): warning C4244:         [
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\SFMLOrthogonalLayer.hpp(339,68): warning C4244:             T=float
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\SFMLOrthogonalLayer.hpp(339,68): warning C4244:         ]
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\SFMLOrthogonalLayer.hpp(339,39): warning C4244:  'argumento': conversão de 'uint32_t' para 'T', possível perda de dados
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\SFMLOrthogonalLayer.hpp(339,39): warning C4244:         with
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\SFMLOrthogonalLayer.hpp(339,39): warning C4244:         [
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\SFMLOrthogonalLayer.hpp(339,39): warning C4244:             T=float
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\SFMLOrthogonalLayer.hpp(339,39): warning C4244:         ]
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\SFMLOrthogonalLayer.hpp(346,77): warning C4244:  'argumento': conversão de 'T' para 'T', possível perda de dados
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\SFMLOrthogonalLayer.hpp(346,77): warning C4244:         with
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\SFMLOrthogonalLayer.hpp(346,77): warning C4244:         [
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\SFMLOrthogonalLayer.hpp(346,77): warning C4244:             T=unsigned int
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\SFMLOrthogonalLayer.hpp(346,77): warning C4244:         ]
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\SFMLOrthogonalLayer.hpp(346,77): warning C4244:         and
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\SFMLOrthogonalLayer.hpp(346,77): warning C4244:         [
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\SFMLOrthogonalLayer.hpp(346,77): warning C4244:             T=float
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\SFMLOrthogonalLayer.hpp(346,77): warning C4244:         ]
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\SFMLOrthogonalLayer.hpp(346,147): warning C4244:  'argumento': conversão de 'T' para 'T', possível perda de dados
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\SFMLOrthogonalLayer.hpp(346,147): warning C4244:         with
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\SFMLOrthogonalLayer.hpp(346,147): warning C4244:         [
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\SFMLOrthogonalLayer.hpp(346,147): warning C4244:             T=unsigned int
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\SFMLOrthogonalLayer.hpp(346,147): warning C4244:         ]
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\SFMLOrthogonalLayer.hpp(346,147): warning C4244:         and
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\SFMLOrthogonalLayer.hpp(346,147): warning C4244:         [
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\SFMLOrthogonalLayer.hpp(346,147): warning C4244:             T=float
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\SFMLOrthogonalLayer.hpp(346,147): warning C4244:         ]
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\SFMLOrthogonalLayer.hpp(347,96): warning C4244:  'argumento': conversão de 'T' para 'T', possível perda de dados
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\SFMLOrthogonalLayer.hpp(347,96): warning C4244:         with
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\SFMLOrthogonalLayer.hpp(347,96): warning C4244:         [
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\SFMLOrthogonalLayer.hpp(347,96): warning C4244:             T=unsigned int
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\SFMLOrthogonalLayer.hpp(347,96): warning C4244:         ]
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\SFMLOrthogonalLayer.hpp(347,96): warning C4244:         and
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\SFMLOrthogonalLayer.hpp(347,96): warning C4244:         [
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\SFMLOrthogonalLayer.hpp(347,96): warning C4244:             T=float
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\SFMLOrthogonalLayer.hpp(347,96): warning C4244:         ]
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\SFMLOrthogonalLayer.hpp(347,77): warning C4244:  'argumento': conversão de 'T' para 'T', possível perda de dados
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\SFMLOrthogonalLayer.hpp(347,77): warning C4244:         with
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\SFMLOrthogonalLayer.hpp(347,77): warning C4244:         [
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\SFMLOrthogonalLayer.hpp(347,77): warning C4244:             T=unsigned int
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\SFMLOrthogonalLayer.hpp(347,77): warning C4244:         ]
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\SFMLOrthogonalLayer.hpp(347,77): warning C4244:         and
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\SFMLOrthogonalLayer.hpp(347,77): warning C4244:         [
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\SFMLOrthogonalLayer.hpp(347,77): warning C4244:             T=float
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\SFMLOrthogonalLayer.hpp(347,77): warning C4244:         ]
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\SFMLOrthogonalLayer.hpp(347,180): warning C4244:  'argumento': conversão de 'T' para 'T', possível perda de dados
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\SFMLOrthogonalLayer.hpp(347,180): warning C4244:         with
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\SFMLOrthogonalLayer.hpp(347,180): warning C4244:         [
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\SFMLOrthogonalLayer.hpp(347,180): warning C4244:             T=unsigned int
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\SFMLOrthogonalLayer.hpp(347,180): warning C4244:         ]
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\SFMLOrthogonalLayer.hpp(347,180): warning C4244:         and
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\SFMLOrthogonalLayer.hpp(347,180): warning C4244:         [
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\SFMLOrthogonalLayer.hpp(347,180): warning C4244:             T=float
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\SFMLOrthogonalLayer.hpp(347,180): warning C4244:         ]
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\SFMLOrthogonalLayer.hpp(347,161): warning C4244:  'argumento': conversão de 'T' para 'T', possível perda de dados
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\SFMLOrthogonalLayer.hpp(347,161): warning C4244:         with
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\SFMLOrthogonalLayer.hpp(347,161): warning C4244:         [
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\SFMLOrthogonalLayer.hpp(347,161): warning C4244:             T=unsigned int
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\SFMLOrthogonalLayer.hpp(347,161): warning C4244:         ]
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\SFMLOrthogonalLayer.hpp(347,161): warning C4244:         and
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\SFMLOrthogonalLayer.hpp(347,161): warning C4244:         [
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\SFMLOrthogonalLayer.hpp(347,161): warning C4244:             T=float
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\SFMLOrthogonalLayer.hpp(347,161): warning C4244:         ]
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\SFMLOrthogonalLayer.hpp(348,82): warning C4244:  'argumento': conversão de 'T' para 'T', possível perda de dados
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\SFMLOrthogonalLayer.hpp(348,82): warning C4244:         with
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\SFMLOrthogonalLayer.hpp(348,82): warning C4244:         [
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\SFMLOrthogonalLayer.hpp(348,82): warning C4244:             T=unsigned int
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\SFMLOrthogonalLayer.hpp(348,82): warning C4244:         ]
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\SFMLOrthogonalLayer.hpp(348,82): warning C4244:         and
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\SFMLOrthogonalLayer.hpp(348,82): warning C4244:         [
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\SFMLOrthogonalLayer.hpp(348,82): warning C4244:             T=float
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\SFMLOrthogonalLayer.hpp(348,82): warning C4244:         ]
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\SFMLOrthogonalLayer.hpp(348,152): warning C4244:  'argumento': conversão de 'T' para 'T', possível perda de dados
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\SFMLOrthogonalLayer.hpp(348,152): warning C4244:         with
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\SFMLOrthogonalLayer.hpp(348,152): warning C4244:         [
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\SFMLOrthogonalLayer.hpp(348,152): warning C4244:             T=unsigned int
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\SFMLOrthogonalLayer.hpp(348,152): warning C4244:         ]
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\SFMLOrthogonalLayer.hpp(348,152): warning C4244:         and
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\SFMLOrthogonalLayer.hpp(348,152): warning C4244:         [
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\SFMLOrthogonalLayer.hpp(348,152): warning C4244:             T=float
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\SFMLOrthogonalLayer.hpp(348,152): warning C4244:         ]
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\SFMLOrthogonalLayer.hpp(402,13): warning C4244:  'return': conversão de 'T' para 'int', possível perda de dados
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\SFMLOrthogonalLayer.hpp(402,13): warning C4244:         with
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\SFMLOrthogonalLayer.hpp(402,13): warning C4244:         [
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\SFMLOrthogonalLayer.hpp(402,13): warning C4244:             T=float
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\SFMLOrthogonalLayer.hpp(402,13): warning C4244:         ]
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\SFMLOrthogonalLayer.hpp(582,19): warning C4244:  'inicializando': conversão de 'float' para 'uint32_t', possível perda de dados
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\SFMLOrthogonalLayer.hpp(583,19): warning C4244:  'inicializando': conversão de 'float' para 'uint32_t', possível perda de dados
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\SFMLOrthogonalLayer.hpp(584,70): warning C4244:  '=': conversão de 'T' para 'T', possível perda de dados
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\SFMLOrthogonalLayer.hpp(584,70): warning C4244:         with
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\SFMLOrthogonalLayer.hpp(584,70): warning C4244:         [
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\SFMLOrthogonalLayer.hpp(584,70): warning C4244:             T=float
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\SFMLOrthogonalLayer.hpp(584,70): warning C4244:         ]
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\SFMLOrthogonalLayer.hpp(584,70): warning C4244:         and
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\SFMLOrthogonalLayer.hpp(584,70): warning C4244:         [
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\SFMLOrthogonalLayer.hpp(584,70): warning C4244:             T=unsigned int
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\SFMLOrthogonalLayer.hpp(584,70): warning C4244:         ]
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\SFMLOrthogonalLayer.hpp(585,70): warning C4244:  '=': conversão de 'T' para 'T', possível perda de dados
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\SFMLOrthogonalLayer.hpp(585,70): warning C4244:         with
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\SFMLOrthogonalLayer.hpp(585,70): warning C4244:         [
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\SFMLOrthogonalLayer.hpp(585,70): warning C4244:             T=float
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\SFMLOrthogonalLayer.hpp(585,70): warning C4244:         ]
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\SFMLOrthogonalLayer.hpp(585,70): warning C4244:         and
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\SFMLOrthogonalLayer.hpp(585,70): warning C4244:         [
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\SFMLOrthogonalLayer.hpp(585,70): warning C4244:             T=unsigned int
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\SFMLOrthogonalLayer.hpp(585,70): warning C4244:         ]
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\Game.cpp(230,13): warning C4244:  'inicializando': conversão de 'float' para 'long', possível perda de dados
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\Game.cpp(253,10): warning C4244:  'inicializando': conversão de 'float' para 'int', possível perda de dados
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\Game.cpp(286,26): warning C4244:  'argumento': conversão de 'int' para 'float', possível perda de dados
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\Game.cpp(286,22): warning C4244:  'argumento': conversão de 'int' para 'float', possível perda de dados
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\Game.cpp(628,28): warning C4244:  'argumento': conversão de '__int64' para 'const _Ty', possível perda de dados
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\Game.cpp(628,28): warning C4244:         with
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\Game.cpp(628,28): warning C4244:         [
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\Game.cpp(628,28): warning C4244:             _Ty=float
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\Game.cpp(628,28): warning C4244:         ]
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\Game.cpp(630,28): warning C4018:  '>': incompatibilidade de signed/unsigned
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\Game.cpp(635,29): warning C4244:  'inicializando': conversão de 'float' para 'int', possível perda de dados
+     Criando biblioteca C:\Users\MICRO\source\repos\Soleus\Debug\Soleus-Client.lib e objeto C:\Users\MICRO\source\repos\Soleus\Debug\Soleus-Client.exp
   SFML-AppTest.vcxproj -> C:\Users\MICRO\source\repos\Soleus\Debug\Soleus-Client.exe

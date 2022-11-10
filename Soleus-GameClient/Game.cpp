@@ -4,6 +4,9 @@
 #include "Creature.h"
 #include "State.h"
 
+#include <tmxlite/Map.hpp>
+#include "SFMLOrthogonalLayer.hpp"
+
 float speed = PLAYER_SPEED; // moving speed
 float zoomSpeed = 40.f; // zoom speed
 sf::RenderWindow window; // game window
@@ -17,8 +20,21 @@ InputHandler inputHandler;
 
 // game map texture
 sf::RenderTexture texture;
-// tilemap 
-TileMap map;
+// Map 
+tmx::Map map;
+/// map layers
+/// floors  - array of tiles of each layer - grass, stone, etc... -> basic ground tiles
+/// walls	- array of walls of each layer - walls of houses, bridges, any wall-like tile -> blocks user movement
+/// inbetweens - array of misc tiles that are inbetween two layers - decorations, stairs, etc...
+/// collisions - array of collision objects of each layer (object layer) - for physical collision check
+/// stairs - array of triggers objects of each layer (object layer) - for changing floors trigger actions
+std::vector<std::unique_ptr<MapLayer>> floors;
+std::vector<std::unique_ptr<MapLayer>> walls;
+std::vector<std::unique_ptr<MapLayer>> inbetweens;
+std::vector<std::unique_ptr<MapLayer>> collisions;
+std::vector<std::unique_ptr<MapLayer>> stairs;
+std::vector<std::unique_ptr<MapLayer>> layers;
+//TileMap map;
 // player
 Player player(100, 100, 128, sf::Vector2f(INIT_X, INIT_Y));
 // player client prediction and interpolation vars
@@ -151,9 +167,19 @@ bool Game::load() {
 		0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
 	};
 
-	// create the tilemap from the level definition
-	if (!map.load("assets/tileset.png", sf::Vector2u(32, 32), level, 32, 23))
-		std::cout << "error loading tileset" << std::endl;
+	// load the map created with tiled
+	/*if (!map.load("assets/tileset.png", sf::Vector2u(32, 32), level, 32, 23))
+		std::cout << "error loading tileset" << std::endl;*/
+	if (map.load("assets/map/soleus_map.tmx")) {
+		for (int i = 0; i < 11; i++) {
+			layers.push_back(std::make_unique<MapLayer>(map, i));
+			std::cout << layers.at(i)->getLayerType() << std::endl;
+		}
+		// TODO GET LAYERS SIZE TO LIMIT LOOP ACCORDINGLY AND PUT EACH LAYER IN ITS CORRECT TYPE ARRAY (floors, walls...)
+	}
+	else {
+		std::cout << "error loading map" << std::endl;
+	}
 
 	// create a view with the rectangular area of the 2D world to show
 	gameView = sf::View (sf::FloatRect(32.f * 16, 23.f * 16, 300.f, 200.f));
@@ -173,7 +199,7 @@ bool Game::load() {
 	uiView.setViewport(sf::FloatRect(0.85f, 0.15f, 0.15f, 0.85f));
 
 	// Create a new render-texture to render tilemap
-	if (!texture.create(960, 640))
+	if (!texture.create(map.getTileSize().x * map.getTileCount().x, map.getTileSize().y * map.getTileCount().y))
 		std::cout << "error creating map texture" << std::endl;
 
 	texture.setSmooth(true);
@@ -383,9 +409,11 @@ void Game::update(float dt) {
 void Game::draw()
 {
 	// Clear the whole texture with red color
-	texture.clear(sf::Color::Red);
-	// Draw stuff to the texture
-	texture.draw(map);
+	texture.clear(sf::Color::Black);
+	// Draw map to the texture
+	//texture.draw(map);
+	for (int i = 0; i < 9; i++)
+		texture.draw(*layers.at(i));
 
 	// We're done drawing to the texture
 	texture.display();
@@ -404,6 +432,9 @@ void Game::draw()
 	// Draw the texture for game view
 	sf::Sprite sprite(texture.getTexture());
 	window.draw(sprite);
+
+	//for (int i = 0; i < 9; i++)
+		//window.draw(*layers.at(i));
 
 	// draw entities
 	player.draw(window); // draw player

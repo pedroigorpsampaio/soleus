@@ -1,2 +1,5 @@
-﻿  Networker.cpp
+﻿  Server.cpp
+  Util.cpp
+  Gerando Código...
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameServer\Util.cpp(19,14): warning C4244:  'return': conversão de 'double' para 'float', possível perda de dados
   Soleus-GameServer.vcxproj -> C:\Users\MICRO\source\repos\Soleus\Debug\Soleus-GameServer.exe

@@ -5,9 +5,10 @@
 #include <SFML\System\Vector2.hpp>
 
 static const int TILESIZE = 32;
-static const int INIT_X = 300;
-static const int INIT_Y = 300;
-static const int PLAYER_SPEED = 100;
+static const int INIT_X = 2080;	/// new player x
+static const int INIT_Y = 3008; /// new player y
+static const int INIT_L = 0; /// new player layer
+static const int PLAYER_SPEED = 100; /// new player speed
 static const int SNAPSHOT_TICKRATE = 10; // SNAPSHOT (SERVER STATE) SENT PER SECOND
 
 /// format timestamp into a string of date and time
