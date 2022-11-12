@@ -1,14 +1,19 @@
 #include "Entity.h"
 #include <cmath>
 
+float incX, incY; // interpolation increments
+float fps; // current game fps
+
 Entity::Entity() {
 	health = 100; maxHealth = 100; speed = 100; pos = sf::Vector2f(0, 0); velocity = sf::Vector2f(0, 0);
+	active = false; floor = INIT_FLOOR;
 }
 
 Entity::Entity(int health, int maxHealth, int speed, sf::Vector2f initialPos) :
 	health(health), maxHealth(maxHealth), speed(speed), pos(initialPos)
 {
 	velocity = sf::Vector2f(0, 0);
+	active = false; floor = INIT_FLOOR;
 }
 
 int Entity::getHealth()

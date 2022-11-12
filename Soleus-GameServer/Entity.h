@@ -1,9 +1,10 @@
+#ifndef ENTITY_H
+#define ENTITY_H
+
 #include <SFML\System\Vector2.hpp>
 #include <SFML\Graphics\Sprite.hpp>
 #include <SFML\Graphics\Texture.hpp>
-
-#ifndef ENTITY_H
-#define ENTITY_H
+#include "Util.h"
 
 class Entity
 {
@@ -11,10 +12,12 @@ public:
 	int health;		// current health of entity
 	int maxHealth;  // max health of entity
 	int speed;		// entity speed
+	int floor;		// player current floor
 	sf::Vector2f pos; // position of entity in the world
 	sf::Vector2f velocity; // current velocity of entity
 	sf::Sprite sprite; // entity current sprite
 	sf::Texture texture; // entity texture
+	bool active; // is entity active 
 
 	enum Event {	// enum that represent possible events that can happen to entities
 		MoveUp = 1 << 0,

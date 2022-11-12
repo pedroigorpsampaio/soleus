@@ -1,10 +1,12 @@
+#ifndef ENTITY_H
+#define ENTITY_H
+
 #include <SFML\System\Vector2.hpp>
 #include <SFML\Graphics\Sprite.hpp>
 #include <SFML\Graphics\Texture.hpp>
 #include <SFML\Graphics\RenderWindow.hpp>
-
-#ifndef ENTITY_H
-#define ENTITY_H
+#include <tmxlite/Object.hpp>
+#include "Util.h"
 
 class Entity
 {
@@ -12,10 +14,12 @@ class Entity
 		int health;		// current health of entity
 		int maxHealth;  // max health of entity
 		int speed;		// entity speed
+		int floor;		// player current floor
 		sf::Vector2f pos, goal; // position of entity in the world
 		sf::Vector2f velocity; // current velocity of entity
 		sf::Sprite sprite; // entity current sprite
 		sf::Texture texture; // entity texture
+		sf::Rect<float> collider; // entity collider
 		bool active; // is entity active 
 
 		enum Event {	// enum that represent possible events that can happen to entities
@@ -41,9 +45,19 @@ class Entity
 		void interpolate(float x, float y); // prepares interpolation between current position and position received from server
 		void interpolate(sf::Vector2f goal); // prepares interpolation between current position and position received from server
 		int react(Entity source, Event event); // reacts to events directed to the entity
-		void load(sf::Texture& texture); // loads entity
+		void enterCollision(tmx::Object source); // reacts to collisions with object tiles from map
+		int getFloorIdx(); // gets player current floor as an array index to be used in layer arrays
+		sf::Rect<float> getCollider(); // gets collider of entity
+		void adjustCollider();	// sets default collider offsets
+		void adjustCollider(float offX, float offY, float scaleX, float scaleY); // sets collider offsets and dimensions
+		int load(std::string texturePath, float scaleX, float scaleY); // loads entity
 		void update(float dt); // updates entity in each cycle of the game loop
 		void draw(sf::RenderWindow& window); // draws entity in window received in param
+
+	protected:
+		sf::Rect<float> colOffset; // offsets for collider adjustment (x and y offset, width and height of collider)
+
+		void updateCollider(); // updates collider accordingly to entity position
 };
 
 #endif

@@ -137,49 +137,43 @@ bool Game::load() {
 	// set position
 	svTimeText.setPosition(0.0f, 60.0f);
 
-
-	// define the level with an array of tile indices
-	int level[] =
-	{
-		0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-		0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-		1, 1, 0, 0, 0, 0, 0, 0, 3, 3, 3, 3, 3, 3, 3, 3, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-		0, 1, 0, 0, 2, 0, 3, 3, 3, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-		0, 1, 1, 0, 3, 3, 3, 0, 0, 0, 1, 1, 1, 2, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-		0, 0, 1, 0, 3, 0, 2, 2, 0, 0, 1, 1, 1, 1, 2, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-		2, 0, 1, 0, 3, 0, 2, 2, 2, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-		0, 0, 1, 0, 3, 2, 2, 2, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-		0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-		0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-		0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-		0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-		0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-		0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-		0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-		0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-		0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-		0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-		0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-		0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-		0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-		0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-		0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-		0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-	};
-
 	// load the map created with tiled
-	/*if (!map.load("assets/tileset.png", sf::Vector2u(32, 32), level, 32, 23))
-		std::cout << "error loading tileset" << std::endl;*/
 	if (map.load("assets/map/soleus_map.tmx")) {
-		for (int i = 0; i < 11; i++) {
+		// number of layers in map
+		auto nLayers = map.getLayers().size();
+		// creates and stores each layer accordingly
+		for (int i = 0; i < nLayers; i++) {
 			layers.push_back(std::make_unique<MapLayer>(map, i));
-			std::cout << layers.at(i)->getLayerType() << std::endl;
+			switch (layers.at(i)->getLayerType()) {
+			case LayerType::Floor:
+				floors.push_back(std::make_unique<MapLayer>(map, i));
+				break;
+			case LayerType::Wall:
+				walls.push_back(std::make_unique<MapLayer>(map, i));
+				break;
+			case LayerType::Inbetween:
+				inbetweens.push_back(std::make_unique<MapLayer>(map, i));
+				break;
+			case LayerType::Collision:
+				collisions.push_back(std::make_unique<MapLayer>(map, i));
+				break;
+			case LayerType::Stair:
+				stairs.push_back(std::make_unique<MapLayer>(map, i));
+				break;
+			default:
+				std::cout << "Unknown layer type" << std::endl;
+				break;
+			}
 		}
-		// TODO GET LAYERS SIZE TO LIMIT LOOP ACCORDINGLY AND PUT EACH LAYER IN ITS CORRECT TYPE ARRAY (floors, walls...)
 	}
 	else {
 		std::cout << "error loading map" << std::endl;
 	}
+
+	// loads player texture
+	player.load("assets/sprites/player_tst.png", 0.2f, 0.2f);
+	// load creature example texture
+	demon.load("assets/sprites/creature_tst.png", 0.2f, 0.2f);
 
 	// create a view with the rectangular area of the 2D world to show
 	gameView = sf::View (sf::FloatRect(32.f * 16, 23.f * 16, 300.f, 200.f));
@@ -301,18 +295,27 @@ void Game::update(float dt) {
 		window.close();
 
 	/// handle movement
-	
-	// update entities
-	demon.update(dt);
 
 	// input prediction
 	sf::Vector2f nVelocity = util::normalize(player.getVelocity());
 	//std::cout << nDirection.x << "," << nDirection.y << std::endl;
 	//std::cout << player.getPos().x << std::endl;
-	// if there is a movement
+
+	// if there is a movement - input prediction 
 	if (nVelocity.x != 0 || nVelocity.y != 0) {
-		// input prediction - move player
-		player.move(nVelocity.x * PLAYER_SPEED * dt, nVelocity.y * PLAYER_SPEED * dt);
+		float mX = nVelocity.x * PLAYER_SPEED * dt, mY = nVelocity.y * PLAYER_SPEED * dt;
+		/// check collisions in the current players floor before moving
+		// check collisions with stairs (trigger collisions)
+		// floor to array idx conversion
+		stairs.at(player.getFloorIdx())->checkCollision(player, player.collider.left + mX, player.collider.top + mY);
+
+		player.move(mX, mY);
+
+		// TODO NOW
+		// DO COLLISION - PREDICT COLLISION / ONLY MOVE IF THERE IS NO COLLISION WITH FUTURE POSITION
+		// ADJUST CHANGE OF FLOORS POSITION FOR STAIRS, HOLES AND LADDERS!
+		// SYNC PHYSICS OF PHYSICAL AND STAIR COLLISION WITH SERVER !!!!
+		// ORDER DRAWING BASED ON X AND Y !!!!! CREATE A ORDERED LIST OF DRAWABLES, INCLUDING TILES, ENTITIES, OBJECTS ETC..
 
 		//std::cout << player.getPos().x << std::endl;
 
@@ -403,6 +406,10 @@ void Game::update(float dt) {
 		inputHandler.halt();
 	}
 
+	// update entities
+	demon.update(dt);
+	player.update(dt);
+
 }
 
 // draws game - parte of gameloop
@@ -410,10 +417,25 @@ void Game::draw()
 {
 	// Clear the whole texture with red color
 	texture.clear(sf::Color::Black);
-	// Draw map to the texture
-	//texture.draw(map);
-	for (int i = 0; i < 9; i++)
-		texture.draw(*layers.at(i));
+
+	// Draw map to the texture - only floors that are of interest for player.
+	// Given that each array of categorized layers are ordered, we can calculate
+	// the floors to be drawn based on player desired field of vision for altitude
+	int initI = player.getLowestVisibleFloor(),
+		finalI = player.getHighestVisibleFloor(floors.size());
+
+	// draw the selected floors with all its tile layers (walls, inbetweens...)
+	for (int i = initI; i <= finalI; i++) {
+		texture.draw(*floors.at(i));
+		texture.draw(*inbetweens.at(i));
+		texture.draw(*walls.at(i));
+	}
+
+	// if set on (for debug) draw players floor colliders
+	if (DRAW_COLLIDERS) {
+		texture.draw(*stairs.at(player.getFloorIdx()));
+		texture.draw(*collisions.at(player.getFloorIdx()));
+	}
 
 	// We're done drawing to the texture
 	texture.display();

@@ -1,5 +1,31 @@
-﻿  Server.cpp
+﻿  Creature.cpp
+  Entity.cpp
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameServer\Entity.cpp(46,11): warning C4244:  'inicializando': conversão de 'T' para 'int', possível perda de dados
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameServer\Entity.cpp(46,11): warning C4244:         with
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameServer\Entity.cpp(46,11): warning C4244:         [
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameServer\Entity.cpp(46,11): warning C4244:             T=float
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameServer\Entity.cpp(46,11): warning C4244:         ]
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameServer\Entity.cpp(47,11): warning C4244:  'inicializando': conversão de 'T' para 'int', possível perda de dados
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameServer\Entity.cpp(47,11): warning C4244:         with
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameServer\Entity.cpp(47,11): warning C4244:         [
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameServer\Entity.cpp(47,11): warning C4244:             T=float
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameServer\Entity.cpp(47,11): warning C4244:         ]
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameServer\Entity.cpp(49,29): warning C4244:  'argumento': conversão de 'int' para 'T', possível perda de dados
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameServer\Entity.cpp(49,29): warning C4244:         with
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameServer\Entity.cpp(49,29): warning C4244:         [
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameServer\Entity.cpp(49,29): warning C4244:             T=float
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameServer\Entity.cpp(49,29): warning C4244:         ]
+  GameLoop.cpp
+  Networker.cpp
+  Server.cpp
+  State.cpp
   Util.cpp
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameServer\Entity.cpp(49,23): warning C4244:  'argumento': conversão de 'int' para 'T', possível perda de dados
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameServer\Entity.cpp(49,23): warning C4244:         with
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameServer\Entity.cpp(49,23): warning C4244:         [
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameServer\Entity.cpp(49,23): warning C4244:             T=float
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameServer\Entity.cpp(49,23): warning C4244:         ]
+  main.cpp
   Gerando Código...
 C:\Users\MICRO\source\repos\Soleus\Soleus-GameServer\Util.cpp(19,14): warning C4244:  'return': conversão de 'double' para 'float', possível perda de dados
   Soleus-GameServer.vcxproj -> C:\Users\MICRO\source\repos\Soleus\Debug\Soleus-GameServer.exe

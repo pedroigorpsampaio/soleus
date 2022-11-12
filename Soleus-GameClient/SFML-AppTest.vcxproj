@@ -143,7 +143,6 @@
     <ClCompile Include="Networker.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="State.cpp" />
-    <ClCompile Include="TileMap.cpp" />
     <ClCompile Include="Util.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -161,7 +160,6 @@
     <ClInclude Include="Player.h" />
     <ClInclude Include="SFMLOrthogonalLayer.hpp" />
     <ClInclude Include="State.h" />
-    <ClInclude Include="TileMap.h" />
     <ClInclude Include="Util.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

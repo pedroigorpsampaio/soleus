@@ -74,6 +74,8 @@ namespace LayerType
 class MapLayer final : public sf::Drawable
 {
 public:
+	std::vector<tmx::Object> objects;
+
 	MapLayer(const tmx::Map& map, std::size_t idx)
 	{
 		const auto& layers = map.getLayers();
@@ -129,13 +131,12 @@ public:
 			//std::cout << "Not a valid orthogonal layer, nothing will be drawn." << std::endl;
 
 			const tmx::ObjectGroup& objectLayer = layers[idx]->getLayerAs<tmx::ObjectGroup>();
-			const std::vector<tmx::Object>& objects = objectLayer.getObjects();
+			objects = objectLayer.getObjects();
 			const auto& objectLayerProperties = objectLayer.getProperties();
 
 			// loops through properties to store them accordingly
 			for (const auto& prop : objectLayerProperties)
 			{
-				std::cout << idx << " : wtd" << std::endl;
 				std::string propName = prop.getName();
 				if (propName.compare("floor") == 0 && prop.getType() == tmx::Property::Type::Int) {
 					m_floor = prop.getIntValue();
@@ -154,10 +155,10 @@ public:
 				}
 			}
 
-			for (const tmx::Object object : objects)
-			{
-				// do stuff with object properties
-			}
+			//for (const tmx::Object object : objects)
+			//{
+			//	// do stuff with object properties
+			//}
 		}
 	}
 
@@ -226,6 +227,22 @@ public:
 
 				setTile(as.tileCords.x, as.tileCords.y, tile);
 			}
+		}
+	}
+
+	/// check collision with each object in this layer
+	/// calling the entities method to react when a collision happens
+	void checkCollision(Entity& entity, float eX, float eY) {
+
+		// TODO - FIX COLLISION RECTS - POINTS USED NOT WORKING PROPERLY !! TEST WITH CAVE HOLE
+
+		float eW = entity.collider.width, eH = entity.collider.height;
+		for (const auto& object : objects) {
+			bool col = util::checkRectCollision(eX, eY, eW, eH, 
+						object.getAABB().left, object.getAABB().top, object.getAABB().width, object.getAABB().height);
+			//std::cout << col << std::endl;
+			if (col) // if collision happens, send to entity to proper reaction
+				entity.enterCollision(object);
 		}
 	}
 
@@ -688,11 +705,28 @@ private:
 
 	void draw(sf::RenderTarget& rt, sf::RenderStates states) const override
 	{
-		//calc view coverage and draw nearest chunks
-		updateVisibility(rt.getView());
-		for (const auto& c : m_visibleChunks)
-		{
-			rt.draw(*c, states);
+		// draw tile layers
+		if (!m_isObjectLayer) {
+			//calc view coverage and draw nearest chunks
+			updateVisibility(rt.getView());
+			for (const auto& c : m_visibleChunks)
+			{
+				// TODO
+				// this is where tiles should be ordered before drawn!!
+				// * put tiles in a ordered list of drawables 
+				// ordered based on x and y !!
+				rt.draw(*c, states);
+			}
+		}
+		else if (DRAW_COLLIDERS) { // if is object layer draw colliders if option is set for debug
+			auto color = m_layerType == LayerType::Collision ? sf::Color::Red : sf::Color::Green;
+			for (const auto object : objects) {
+				util::drawRect(rt, sf::Vector2f(object.getAABB().left, object.getAABB().top), 
+						sf::Vector2f(object.getAABB().left + object.getAABB().width, object.getAABB().top),
+						sf::Vector2f(object.getAABB().left + object.getAABB().width, object.getAABB().top + object.getAABB().height), 
+						sf::Vector2f(object.getAABB().left, object.getAABB().top + object.getAABB().height),
+						color);
+			}
 		}
 	}
 };

@@ -1,6 +1,5 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/Network.hpp>
-#include "TileMap.h"
 #include <iostream>
 #include <sstream>
 #include "InputHandler.h"
