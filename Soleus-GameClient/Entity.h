@@ -20,6 +20,8 @@ class Entity
 		sf::Sprite sprite; // entity current sprite
 		sf::Texture texture; // entity texture
 		sf::Rect<float> collider; // entity collider
+		std::vector<tmx::Object> collisionObjects; // list of current map object collisions with this entity
+		bool changingFloors = false; // if entity is currently changing floors
 		bool active; // is entity active 
 
 		enum Event {	// enum that represent possible events that can happen to entities
@@ -45,7 +47,11 @@ class Entity
 		void interpolate(float x, float y); // prepares interpolation between current position and position received from server
 		void interpolate(sf::Vector2f goal); // prepares interpolation between current position and position received from server
 		int react(Entity source, Event event); // reacts to events directed to the entity
-		void enterCollision(tmx::Object source); // reacts to collisions with object tiles from map
+		void checkCollision(tmx::Object object); // checks collision with an map object
+		void checkCollision(tmx::Object object, sf::Vector2f move); // checks collision with an map object (with entity collision move offset)
+		void onCollisionEnter(tmx::Object source); // reacts to collisions with object tiles from map (when entering)
+		void onCollisionStay(tmx::Object source); //  reacts to collisions with object tiles from map (when staying)
+		void onCollisionExit(tmx::Object source); //  reacts to collisions with object tiles from map (when exiting)
 		int getFloorIdx(); // gets player current floor as an array index to be used in layer arrays
 		sf::Rect<float> getCollider(); // gets collider of entity
 		void adjustCollider();	// sets default collider offsets

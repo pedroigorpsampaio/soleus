@@ -98,23 +98,78 @@ int Entity::react(Entity source, Event event)
 	return 0;
 }
 
-/// deal with collisions with trigger objects present on map 
-void Entity::enterCollision(tmx::Object source) {
-	if (source.getName().compare("hole_down") == 0) {
+void Entity::checkCollision(tmx::Object object) {
+}
+
+void Entity::checkCollision(tmx::Object object, sf::Vector2f move) {
+	bool col = util::checkRectCollision(collider.left + move.x, collider.top + move.y, collider.width, collider.height,
+		object.getAABB().left, object.getAABB().top, object.getAABB().width, object.getAABB().height);
+	//std::cout << col << std::endl;
+	if (col) { // if collision happens
+		// checks if it is already on list of collisions
+		bool isColliding = false;
+		for (const auto& o : collisionObjects) {
+			if (o.getUID() == object.getUID()) { // check by uniqueID
+				isColliding = true;
+			} 
+		}
+		if (!isColliding) { // if not colliding yet, add to list of object collisions and trigger on enter collision
+			collisionObjects.push_back(object);
+			// only calls onCollision enter when not changing floors 
+			// because new floor stair collider should not be triggered 
+			// while changing floors
+			if (!changingFloors)
+				onCollisionEnter(object);
+			else
+				changingFloors = false; // reset changing floor flag
+		}
+		else { // if is already colliding, trigger on stay collision
+			onCollisionStay(object);
+		}
+	}
+}
+
+void Entity::onCollisionEnter(tmx::Object source) {
+	if (source.getName().compare("hole_down") == 0 || source.getName().compare("stair_down") == 0) {
 		floor = floor - 1;
+		changingFloors = true;
 		// move entity(player) according to hole/stairs position
 		// must be done in server also, and has to be done in a way that player dont
 		// walk back up unintentionally
-	}
-	else if (source.getName().compare("stair_up") == 0) {
-		floor = floor + 1;
-		//move(-TILESIZE, -TILESIZE);
 
+		// TODO NOW !!!!
+		// IMPLEMENT ON TRIGGER STAY, LEAVE AND ENTER <-> BETTER COLLIDER ARCHITECTURE
+		// TO BE ABLE TO REACT TO STAY, LEAVE AND ENTER COLLISIONS - 
+		// ONLY CHANGE FLOORS WHEN ENTERING COLLISION 
+		// TO BE ABLE TO CHANGE FLOORS AND LAND ON NEW COLLISION WITHOUT CHANGE FLOORS AGAIN
+		// GOTTA ADD NEW COLLIDER TO THE LIST OF COLLIDER STAYERS AND IGNORE ENTER TRIGGER
+
+		//move(TILESIZE + (TILESIZE * velocity.x), TILESIZE + (TILESIZE * velocity.y));
+		moveTo(source.getAABB().left + TILESIZE * 1.04f, source.getAABB().top + TILESIZE * 0.825f);
+		//move(TILESIZE * 0.75f * velocity.x, TILESIZE * 0.5f * velocity.y);
+		//move(TILESIZE + (source.getAABB().width * velocity.x), TILESIZE*0.81f + ((source.getAABB().height/2) * velocity.y));
+	}
+	else if (source.getName().compare("stair_up") == 0 || source.getName().compare("ladder_up") == 0) {
+		floor = floor + 1;
+		changingFloors = true;
 		// move entity(player) according to hole/stairs position
 		// must be done in server also, and has to be done in a way that player dont
 		// walk back down unintentionally
+
+		//move(TILESIZE * velocity.x, TILESIZE * velocity.y);
+		moveTo(source.getAABB().left - TILESIZE * 0.9f, source.getAABB().top - TILESIZE * 1.1f);
+		//move(TILESIZE*0.75f * velocity.x, TILESIZE * 0.75f * velocity.y);
 	}
 }
+
+void Entity::onCollisionStay(tmx::Object source) {
+	//std::cout << "OnCollisionStay() called" << std::endl;
+}
+
+void Entity::onCollisionExit(tmx::Object source) {
+	//std::cout << "OnCollisionExit() called" << std::endl;
+}
+
 
 /// gets player current floor as an array index to be used in layer arrays
 int Entity::getFloorIdx()
@@ -167,6 +222,20 @@ void Entity::updateCollider() {
 	collider.top = pos.y + colOffset.top;
 	collider.width = colOffset.width;
 	collider.height = colOffset.height;
+
+	// updates list of map collisions removing from it when collision is not happening anymore
+	for (int i = collisionObjects.size()-1; i >= 0; i--) {
+		const auto& o = collisionObjects.at(i);
+		bool col = util::checkRectCollision(collider.left, collider.top, collider.width, collider.height,
+			o.getAABB().left, o.getAABB().top, o.getAABB().width, o.getAABB().height);
+		if (!col) { // if collision does not happen
+			collisionObjects.erase(collisionObjects.begin() + i); // remove from list os collisions
+			onCollisionExit(o); // calls on collision exit callback
+		}
+		else { // if collision still happens, call on collision stay
+			onCollisionStay(o);
+		}
+	}
 }
 
 // updates entity 

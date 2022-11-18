@@ -230,22 +230,6 @@ public:
 		}
 	}
 
-	/// check collision with each object in this layer
-	/// calling the entities method to react when a collision happens
-	void checkCollision(Entity& entity, float eX, float eY) {
-
-		// TODO - FIX COLLISION RECTS - POINTS USED NOT WORKING PROPERLY !! TEST WITH CAVE HOLE
-
-		float eW = entity.collider.width, eH = entity.collider.height;
-		for (const auto& object : objects) {
-			bool col = util::checkRectCollision(eX, eY, eW, eH, 
-						object.getAABB().left, object.getAABB().top, object.getAABB().width, object.getAABB().height);
-			//std::cout << col << std::endl;
-			if (col) // if collision happens, send to entity to proper reaction
-				entity.enterCollision(object);
-		}
-	}
-
 private:
 	//increasing m_chunkSize by 4; fixes render problems when mapsize != chunksize
 	//sf::Vector2f m_chunkSize = sf::Vector2f(1024.f, 1024.f);

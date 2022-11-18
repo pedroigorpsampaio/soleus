@@ -305,18 +305,19 @@ void Game::update(float dt) {
 	if (nVelocity.x != 0 || nVelocity.y != 0) {
 		float mX = nVelocity.x * PLAYER_SPEED * dt, mY = nVelocity.y * PLAYER_SPEED * dt;
 		/// check collisions in the current players floor before moving
-		// check collisions with stairs (trigger collisions)
-		// floor to array idx conversion
-		stairs.at(player.getFloorIdx())->checkCollision(player, player.collider.left + mX, player.collider.top + mY);
-
-		player.move(mX, mY);
+		// check collisions with stairs (trigger collisions)	
+		for (const auto& object : stairs.at(player.getFloorIdx())->objects)
+			player.checkCollision(object, sf::Vector2f(mX, mY));
 
 		// TODO NOW
 		// DO COLLISION - PREDICT COLLISION / ONLY MOVE IF THERE IS NO COLLISION WITH FUTURE POSITION
-		// ADJUST CHANGE OF FLOORS POSITION FOR STAIRS, HOLES AND LADDERS!
+		// ALSO DO NOT MOVE ON NON WALKABLE FLOORS !!!!!!!!!!!!!!!!!!!!!
 		// SYNC PHYSICS OF PHYSICAL AND STAIR COLLISION WITH SERVER !!!!
 		// ORDER DRAWING BASED ON X AND Y !!!!! CREATE A ORDERED LIST OF DRAWABLES, INCLUDING TILES, ENTITIES, OBJECTS ETC..
 
+		player.move(mX, mY);
+
+		
 		//std::cout << player.getPos().x << std::endl;
 
 		// saves new movement in front of list of input movements to proper conciliate with the server in sync moments
@@ -378,15 +379,19 @@ void Game::update(float dt) {
 	//else { player.moveTo(finalPos.x, finalPos.y); }
 
 	// (PING INCLUDED DIFF SERVER POSITION) move by interpolated amount
-	float distance = util::distance(player.getPos().x, player.getPos().y, lastPos.x, lastPos.y);
+	// SERVER RECONCILIATION
 
-	if (distance > 0.5f) {
-		if (player.getPos().x != lastPos.x)
-			player.move(interpolIncX * dt, 0.f);
-		if (player.getPos().y != lastPos.y)
-			player.move(0.f, interpolIncY * dt);
+	if (SERVER_RECONCILIATION) {
+		float distance = util::distance(player.getPos().x, player.getPos().y, lastPos.x, lastPos.y);
+
+		if (distance > 0.5f) {
+			if (player.getPos().x != lastPos.x)
+				player.move(interpolIncX * dt, 0.f);
+			if (player.getPos().y != lastPos.y)
+				player.move(0.f, interpolIncY * dt);
+		}
+		else { player.moveTo(lastPos.x, lastPos.y); }
 	}
-	else { player.moveTo(lastPos.x, lastPos.y); }
 
 	//float svDiffX = player.getPos().x - lastPos.x;
 	//std::cout << "sv diff: " << svDiffX << std::endl;

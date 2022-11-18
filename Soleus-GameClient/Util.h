@@ -17,6 +17,7 @@ static const int N_FLOOR_UP_VISIBLE = 0; /// number of floors visible above
 static const int PLAYER_SPEED = 100; /// new player speed
 static const int SNAPSHOT_TICKRATE = 10; // SNAPSHOT (SERVER STATE) SENT PER SECOND
 static const bool DRAW_COLLIDERS = true; /// draw object colliders in screen (debug)
+static const bool SERVER_RECONCILIATION = false; /// reconciliate player position with server by interpolation
 
 /// format timestamp into a string of date and time
 extern std::string getDateTime(std::chrono::time_point<std::chrono::system_clock> timestamp);
