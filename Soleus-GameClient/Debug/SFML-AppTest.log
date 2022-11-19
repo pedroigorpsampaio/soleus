@@ -1,26 +1,5 @@
 ﻿C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\MSBuild\Microsoft\VC\v160\Microsoft.CppBuild.targets(452,5): warning MSB8028: The intermediate directory (Debug\) contains files shared from another project (SFML-AppTest-MMO.vcxproj, SFML-AppTest.vcxproj).  This can lead to incorrect clean and rebuild behavior.
-  Entity.cpp
-C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\Entity.cpp(46,11): warning C4244:  'inicializando': conversão de 'T' para 'int', possível perda de dados
-C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\Entity.cpp(46,11): warning C4244:         with
-C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\Entity.cpp(46,11): warning C4244:         [
-C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\Entity.cpp(46,11): warning C4244:             T=float
-C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\Entity.cpp(46,11): warning C4244:         ]
-C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\Entity.cpp(47,11): warning C4244:  'inicializando': conversão de 'T' para 'int', possível perda de dados
-C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\Entity.cpp(47,11): warning C4244:         with
-C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\Entity.cpp(47,11): warning C4244:         [
-C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\Entity.cpp(47,11): warning C4244:             T=float
-C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\Entity.cpp(47,11): warning C4244:         ]
-C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\Entity.cpp(49,29): warning C4244:  'argumento': conversão de 'int' para 'T', possível perda de dados
-C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\Entity.cpp(49,29): warning C4244:         with
-C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\Entity.cpp(49,29): warning C4244:         [
-C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\Entity.cpp(49,29): warning C4244:             T=float
-C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\Entity.cpp(49,29): warning C4244:         ]
   Game.cpp
-C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\Entity.cpp(49,23): warning C4244:  'argumento': conversão de 'int' para 'T', possível perda de dados
-C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\Entity.cpp(49,23): warning C4244:         with
-C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\Entity.cpp(49,23): warning C4244:         [
-C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\Entity.cpp(49,23): warning C4244:             T=float
-C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\Entity.cpp(49,23): warning C4244:         ]
 C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\SFMLOrthogonalLayer.hpp(214,21): warning C4018:  '<': incompatibilidade de signed/unsigned
 C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\SFMLOrthogonalLayer.hpp(278,26): warning C4244:  '=': conversão de 'T' para 'T', possível perda de dados
 C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\SFMLOrthogonalLayer.hpp(278,26): warning C4244:         with
@@ -157,12 +136,11 @@ C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\Game.cpp(224,13): warning C
 C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\Game.cpp(247,10): warning C4244:  'inicializando': conversão de 'float' para 'int', possível perda de dados
 C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\Game.cpp(280,26): warning C4244:  'argumento': conversão de 'int' para 'float', possível perda de dados
 C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\Game.cpp(280,22): warning C4244:  'argumento': conversão de 'int' para 'float', possível perda de dados
-C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\Game.cpp(657,28): warning C4244:  'argumento': conversão de '__int64' para 'const _Ty', possível perda de dados
-C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\Game.cpp(657,28): warning C4244:         with
-C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\Game.cpp(657,28): warning C4244:         [
-C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\Game.cpp(657,28): warning C4244:             _Ty=float
-C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\Game.cpp(657,28): warning C4244:         ]
-C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\Game.cpp(659,28): warning C4018:  '>': incompatibilidade de signed/unsigned
-  Gerando Código...
-C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\Game.cpp(664,29): warning C4244:  'inicializando': conversão de 'float' para 'int', possível perda de dados
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\Game.cpp(704,28): warning C4244:  'argumento': conversão de '__int64' para 'const _Ty', possível perda de dados
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\Game.cpp(704,28): warning C4244:         with
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\Game.cpp(704,28): warning C4244:         [
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\Game.cpp(704,28): warning C4244:             _Ty=float
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\Game.cpp(704,28): warning C4244:         ]
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\Game.cpp(706,28): warning C4018:  '>': incompatibilidade de signed/unsigned
+C:\Users\MICRO\source\repos\Soleus\Soleus-GameClient\Game.cpp(711,29): warning C4244:  'inicializando': conversão de 'float' para 'int', possível perda de dados
   SFML-AppTest.vcxproj -> C:\Users\MICRO\source\repos\Soleus\Debug\Soleus-Client.exe

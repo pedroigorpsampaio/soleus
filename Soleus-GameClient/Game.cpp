@@ -304,20 +304,70 @@ void Game::update(float dt) {
 	// if there is a movement - input prediction 
 	if (nVelocity.x != 0 || nVelocity.y != 0) {
 		float mX = nVelocity.x * PLAYER_SPEED * dt, mY = nVelocity.y * PLAYER_SPEED * dt;
+
+		bool physCol = false;
+		bool xCol = false, yCol = false;
 		/// check collisions in the current players floor before moving
-		// check collisions with stairs (trigger collisions)	
+		// check collision with stairs (trigger collisions)	
 		for (const auto& object : stairs.at(player.getFloorIdx())->objects)
-			player.checkCollision(object, sf::Vector2f(mX, mY));
+			player.collider.checkCollision(object, sf::Vector2f(mX, mY));
+
+		// check´physical collision collision with collision objects in maps current floor
+		for (const auto& object : collisions.at(player.getFloorIdx())->objects) {
+			physCol = player.collider.checkPhysCollision(object, sf::Vector2f(mX, mY));
+			if (physCol) { // if there is a collision, try to move to one direction each time to see if its possible
+				if (mX != 0) {
+					xCol = player.collider.checkPhysCollision(object, sf::Vector2f(mX, 0));
+					if (xCol) mX = 0;
+				}
+				if (mY != 0) {
+					yCol = player.collider.checkPhysCollision(object, sf::Vector2f(0, mY));
+					if (yCol) mY = 0;
+				}
+				if (mX && mY == 0) break;
+			}
+		}
+		if (mX || mY != 0) { // if found a possible direction, check again for collision 
+			// makes sure speed is not normalized when only one direction is being walked
+			if (mX != 0 && mY == 0)
+				mX = player.getVelocity().x * PLAYER_SPEED * dt;
+			else if (mY != 0 && mX == 0)
+				mY = player.getVelocity().y * PLAYER_SPEED * dt;
+
+			for (const auto& object : collisions.at(player.getFloorIdx())->objects) {
+				physCol = player.collider.checkPhysCollision(object, sf::Vector2f(mX, mY));
+				if (physCol) break;
+			}
+		}
+
+		if (!physCol) { // only move if there is no physical collision (that blocks movement) in any direction
+			player.move(mX, mY);
+		}
 
 		// TODO NOW
-		// DO COLLISION - PREDICT COLLISION / ONLY MOVE IF THERE IS NO COLLISION WITH FUTURE POSITION
-		// ALSO DO NOT MOVE ON NON WALKABLE FLOORS !!!!!!!!!!!!!!!!!!!!!
+
+		// ->>>> DO NOT MOVE ON NON WALKABLE FLOORS !!!!!!!!!!!!!!!!!!!!!
+		// ->>> STAIRS UPWARDS!!
 		// SYNC PHYSICS OF PHYSICAL AND STAIR COLLISION WITH SERVER !!!!
 		// ORDER DRAWING BASED ON X AND Y !!!!! CREATE A ORDERED LIST OF DRAWABLES, INCLUDING TILES, ENTITIES, OBJECTS ETC..
 
-		player.move(mX, mY);
+		/*else {
+			for (const auto& object : collisions.at(player.getFloorIdx())->objects) {
+				physCol = player.collider.checkPhysCollision(object, sf::Vector2f(0, mY));
+				if (physCol) break;
+			}
+			if(!physCol)
+				player.move(0, mY);
+			else {
+				for (const auto& object : collisions.at(player.getFloorIdx())->objects) {
+					physCol = player.collider.checkPhysCollision(object, sf::Vector2f(mX, 0));
+					if (physCol) break;
+				}
+				if (!physCol)
+					player.move(mX, 0);
+			}
+		}*/
 
-		
 		//std::cout << player.getPos().x << std::endl;
 
 		// saves new movement in front of list of input movements to proper conciliate with the server in sync moments

@@ -19,5 +19,46 @@ int Player::getHighestVisibleFloor(int arraySize) {
 // updates player
 void Player::update(float dt) {
 	// updates player collider
-	updateCollider();
+	collider.updateCollider(getPos());
+}
+
+void Player::onCollisionEnter(tmx::Object source) {
+	if (source.getName().compare("hole_down") == 0 || source.getName().compare("stair_down_downward") == 0) {
+		if (!changingFloors) { // do not change floors if it is currently changing floors
+			floor = floor - 1;
+			changingFloors = true;
+			// move player according to hole/stairs position
+			// must be done in server also, and has to be done in a way that player dont
+			// walk back up unintentionally
+
+			// TODO NOW !!!!
+			// STAIRS UPWARD!!!
+
+			//move(TILESIZE + (TILESIZE * velocity.x), TILESIZE + (TILESIZE * velocity.y));
+			moveTo(source.getAABB().left + TILESIZE * 1.04f, source.getAABB().top + TILESIZE * 0.825f);
+			//move(TILESIZE * 0.75f * velocity.x, TILESIZE * 0.5f * velocity.y);
+			//move(TILESIZE + (source.getAABB().width * velocity.x), TILESIZE*0.81f + ((source.getAABB().height/2) * velocity.y));
+		}
+		else { changingFloors = false; } // reset floor change flag
+	}
+	else if (source.getName().compare("stair_up_downward") == 0 || source.getName().compare("ladder_up") == 0) {
+		if (!changingFloors) { // do not change floors if it is currently changing floors
+			floor = floor + 1;
+			changingFloors = true;
+			// move entity(player) according to hole/stairs position
+			// must be done in server also, and has to be done in a way that player dont
+			// walk back down unintentionally
+
+			//move(TILESIZE * velocity.x, TILESIZE * velocity.y);
+			moveTo(source.getAABB().left - TILESIZE * 0.9f, source.getAABB().top - TILESIZE * 1.1f);
+			//move(TILESIZE*0.75f * velocity.x, TILESIZE * 0.75f * velocity.y);
+		}
+		else { changingFloors = false; } // reset floor change flag
+	}
+}
+
+void Player::onCollisionStay(tmx::Object source) {
+}
+
+void Player::onCollisionExit(tmx::Object source) {
 }

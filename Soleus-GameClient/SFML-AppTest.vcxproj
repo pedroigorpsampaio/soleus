@@ -134,6 +134,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Collider.cpp" />
     <ClCompile Include="Creature.cpp" />
     <ClCompile Include="Entity.cpp" />
     <ClCompile Include="Game.cpp" />
@@ -149,6 +150,8 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Collidable.h" />
+    <ClInclude Include="Collider.h" />
     <ClInclude Include="Creature.h" />
     <ClInclude Include="Date.h" />
     <ClInclude Include="Entity.h" />

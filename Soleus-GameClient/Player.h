@@ -1,5 +1,6 @@
 #ifndef PLAYER_H
 #define PLAYER_H
+
 #include "Entity.h"
 
 class Player : public Entity {
@@ -13,6 +14,10 @@ class Player : public Entity {
 		int getLowestVisibleFloor(); // gets player current lowest visible floor
 		int getHighestVisibleFloor(int arraySize); // gets player current highest visible floor
 		void update(float dt); // updates player
+		// collision reactions
+		virtual void onCollisionEnter(tmx::Object source) override; // reacts to collisions with object tiles from map (when entering)
+		virtual void onCollisionStay(tmx::Object source) override; //  reacts to collisions with object tiles from map (when staying)
+		virtual void onCollisionExit(tmx::Object source) override; //  reacts to collisions with object tiles from map (when exiting)
 };
 
 #endif
