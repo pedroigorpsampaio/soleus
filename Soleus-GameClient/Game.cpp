@@ -25,7 +25,7 @@ tmx::Map map;
 /// map layers
 /// floors  - array of tiles of each layer - grass, stone, etc... -> basic ground tiles
 /// walls	- array of walls of each layer - walls of houses, bridges, any wall-like tile -> blocks user movement
-/// inbetweens - array of misc tiles that are inbetween two layers - decorations, stairs, etc...
+/// inbetweens - array of misc tiles that are inbetween two layers - decorations, etc...
 /// collisions - array of collision objects of each layer (object layer) - for physical collision check
 /// stairs - array of triggers objects of each layer (object layer) - for changing floors trigger actions
 std::vector<std::unique_ptr<MapLayer>> floors;
@@ -137,8 +137,12 @@ bool Game::load() {
 	// set position
 	svTimeText.setPosition(0.0f, 60.0f);
 
+	using namespace std::chrono;
+	auto beforeMapLoad = time_point_cast<milliseconds>(system_clock::now());
+	std::cout << "Loading map... " << std::endl;
+
 	// load the map created with tiled
-	if (map.load("assets/map/soleus_map.tmx")) {
+	if (map.load("assets/map/soleus_map_infinite.tmx")) {
 		// number of layers in map
 		auto nLayers = map.getLayers().size();
 		// creates and stores each layer accordingly
@@ -166,9 +170,13 @@ bool Game::load() {
 			}
 		}
 	}
-	else {
-		std::cout << "error loading map" << std::endl;
-	}
+	//else {
+	//	std::cout << "error loading map" << std::endl;
+	//}
+
+	auto afterMapLoad = time_point_cast<milliseconds>(system_clock::now());
+	auto mapLoadSecs = (afterMapLoad - beforeMapLoad) / 1000.f;
+	std::cout << "Map loaded in " << mapLoadSecs.count() << " seconds" << std::endl;
 
 	// loads player texture
 	player.load("assets/sprites/player_tst.png", 0.2f, 0.2f);
@@ -193,7 +201,9 @@ bool Game::load() {
 	uiView.setViewport(sf::FloatRect(0.85f, 0.15f, 0.15f, 0.85f));
 
 	// Create a new render-texture to render tilemap
-	if (!texture.create(map.getTileSize().x * map.getTileCount().x, map.getTileSize().y * map.getTileCount().y))
+	/*if (!texture.create(map.getTileSize().x * map.getTileCount().x, map.getTileSize().y * map.getTileCount().y))
+		std::cout << "error creating map texture" << std::endl;*/
+	if (!texture.create(map.getTileSize().x * 200, map.getTileSize().y * 200))
 		std::cout << "error creating map texture" << std::endl;
 
 	texture.setSmooth(true);
@@ -307,6 +317,12 @@ void Game::update(float dt) {
 
 		bool physCol = false;
 		bool xCol = false, yCol = false;
+
+		const auto& objects = stairs.at(player.getFloorIdx())->getVisibleObjects(&gameView);
+
+		//std::cout << "objs: " << stairs.at(player.getFloorIdx())->objects.size() << std::endl;
+		//std::cout << "vis: " << objects.size() << std::endl;
+
 		/// check collisions in the current players floor before moving
 		// check collision with stairs (trigger collisions)	
 		for (const auto& object : stairs.at(player.getFloorIdx())->objects)
@@ -327,6 +343,13 @@ void Game::update(float dt) {
 				if (mX && mY == 0) break;
 			}
 		}
+		// check collision with unwalkable floor tiles
+		//std::vector<MapLayer::Chunk*> floorChunks = floors.at(player.getFloorIdx())->getVisibleChunks(window);
+		//for (const auto& c : floorChunks) {
+
+		//}
+		//std::cout << floorChunks.size() << std::endl;
+
 		if (mX || mY != 0) { // if found a possible direction, check again for collision 
 			// makes sure speed is not normalized when only one direction is being walked
 			if (mX != 0 && mY == 0)

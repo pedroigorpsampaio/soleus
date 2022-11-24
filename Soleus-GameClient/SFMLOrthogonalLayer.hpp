@@ -55,6 +55,7 @@ are implemented.
 #include <iostream>
 #include <cmath>
 
+#include "Util.h"
 
 namespace LayerType
 {
@@ -75,10 +76,20 @@ class MapLayer final : public sf::Drawable
 {
 public:
 	std::vector<tmx::Object> objects;
+	std::vector<tmx::Object> visibleObjects;
+	std::vector<tmx::TileLayer::Chunk> chunks;
+	std::vector<const tmx::Tileset*> usedTileSets;
+	const sf::VertexArray *m_vertices;
+	const sf::Texture *m_tileset;
+
+	const tmx::Map *map;
+	std::size_t idx;
 
 	MapLayer(const tmx::Map& map, std::size_t idx)
 	{
 		const auto& layers = map.getLayers();
+		this->map = &map;
+		this->idx = idx;
 
 		// gets layerproperties to be stored
 		const auto& layerProperties = layers[idx]->getProperties();
@@ -112,15 +123,15 @@ public:
 			idx < layers.size() && layers[idx]->getType() == tmx::Layer::Type::Tile)
 		{
 			m_isObjectLayer = false;
-			//round the chunk size to the nearest tile
+			////round the chunk size to the nearest tile
 			const auto tileSize = map.getTileSize();
 			m_chunkSize.x = std::floor(m_chunkSize.x / tileSize.x) * tileSize.x;
 			m_chunkSize.y = std::floor(m_chunkSize.y / tileSize.y) * tileSize.y;
 			m_MapTileSize.x = map.getTileSize().x;
 			m_MapTileSize.y = map.getTileSize().y;
 			const auto& layer = layers[idx]->getLayerAs<tmx::TileLayer>();
+			this->chunks = layers[idx]->getLayerAs<tmx::TileLayer>().getChunks();
 			createChunks(map, layer);
-
 			auto mapSize = map.getBounds();
 			m_globalBounds.width = mapSize.width;
 			m_globalBounds.height = mapSize.height;
@@ -230,7 +241,7 @@ public:
 		}
 	}
 
-private:
+
 	//increasing m_chunkSize by 4; fixes render problems when mapsize != chunksize
 	//sf::Vector2f m_chunkSize = sf::Vector2f(1024.f, 1024.f);
 	sf::Vector2f m_chunkSize = sf::Vector2f(512.f, 512.f);
@@ -251,6 +262,133 @@ private:
 		sf::Time currentTime;
 		tmx::Tileset::Tile animTile;
 		std::uint8_t flipFlags;
+	};
+
+	class Chunkie final : public sf::Transformable, public sf::Drawable
+	{
+	public:
+		sf::VertexArray m_vertices;
+		sf::Texture *m_tileset;
+
+		bool load(TextureResource& tilesetResource, std::vector<const tmx::Tileset*> tilesets, 
+			sf::Vector2u tileSize, std::vector<tmx::TileLayer::Tile> tiles, 
+				unsigned int width, unsigned int height, tmx::Vector2i position)
+		{
+			//float atlasW, atlasH;
+			//for (const auto& ts : tilesets) {
+			//	atlasW += ts->getImageSize().x; atlasH += ts->getImageSize().y;
+			//}
+			//if (!tileAtlas.create(atlasW, atlasH))
+			//	std::cout << "error creating tile atlas texture" << std::endl;
+
+			//texture.setSmooth(true);
+			//sf::Sprite sprite;
+
+			//for (const auto& ts : tilesets)
+			//{
+			//	if (ts->getImagePath().empty())
+			//	{
+			//		tmx::Logger::log("This example does not support Collection of Images tilesets", tmx::Logger::Type::Info);
+			//		tmx::Logger::log("Chunks using " + ts->getName() + " will not be created", tmx::Logger::Type::Info);
+			//		continue;
+			//	}
+			//	//*tilesetResource.find(ts->getImagePath())->second;
+			//	//tileAtlas.draw(*tilesetResource.find(ts->getImagePath())->second);
+			//}
+
+			// resize the vertex array to fit the level size
+			m_vertices.setPrimitiveType(sf::Quads);
+			m_vertices.resize(width * height * 4);
+
+			// populate the vertex array, with one quad per tile
+			for (unsigned int i = 0; i < width; ++i)
+				for (unsigned int j = 0; j < height; ++j)
+				{
+					// get the current tile number
+					int tileNumber = tiles[i + j * width].ID;
+					// ignore empty tiles
+					if (tileNumber == 0) continue;
+
+					// WHY INBETWEENS AND WALLS ARE BUGGY?!
+					int tsID;
+					for (tsID = tilesets.size() - 1; tsID >= 0; tsID--) {
+						if (tileNumber > tilesets.at(tsID)->getFirstGID()) {
+							break;
+						}
+					}
+
+					// fix limits
+					if (tsID >= tilesets.size())
+						tsID = tilesets.size() - 1;
+					if (tsID < 0) tsID = 0;
+
+					m_tileset = &(*tilesetResource.find(tilesets.at(tsID)->getImagePath())->second);
+					tileNumber -= tilesets.at(tsID)->getFirstGID();
+
+					//std::cout << tilesets.at(tsID)->getFirstGID() << std::endl;
+
+					// size of tiles in tileset (can be different of map tilesize)
+					sf::Vector2u tsTileSize(tilesets.at(tsID)->getTileSize().x, tilesets.at(tsID)->getTileSize().y);
+					// tilesize offset in case of differences between tileset and map tilesize
+					int offX = tileSize.x - tsTileSize.x; int offY = tileSize.y - tsTileSize.y;
+					sf::Vector2u tsOff(abs(offX), abs(offY));
+
+					// find its position in the tileset texture
+					int tu = tileNumber % (m_tileset->getSize().x / tsTileSize.x);
+					int tv = tileNumber / (m_tileset->getSize().x / tsTileSize.x);
+
+					//if(tilesets.at(tsID)->getFirstGID() > 1)
+						//std::cout << "tu: " << tu << " | tv: " << tv << std::endl;
+
+					// get a pointer to the current tile's quad
+					sf::Vertex* quad = &m_vertices[(i + j * width) * 4];
+
+					// position of chunk in map (relative to map tilesize)
+					sf::Vector2f cPos = sf::Vector2f(position.x * tileSize.x, position.y * tileSize.y);
+					//sf::Vector2f oPos = sf::Vector2f(, position.y * tileSize.y);
+
+					// define its 4 texture coordinates
+					quad[0].texCoords = sf::Vector2f(tu * tsTileSize.x, tv * tsTileSize.y);
+					quad[1].texCoords = sf::Vector2f((tu + 1) * tsTileSize.x, tv * tsTileSize.y);
+					quad[2].texCoords = sf::Vector2f((tu + 1) * tsTileSize.x, (tv + 1) * tsTileSize.y);
+					quad[3].texCoords = sf::Vector2f(tu * tsTileSize.x, (tv + 1) * tsTileSize.y);
+
+					// define its 4 corners for the position in the world map
+					quad[0].position = sf::Vector2f(i * tileSize.x + cPos.x, j * tileSize.y + cPos.y - tsOff.y);
+					quad[1].position = sf::Vector2f((i + 1) * tileSize.x + cPos.x + tsOff.x, j * tileSize.y + cPos.y - tsOff.y);
+					quad[2].position = sf::Vector2f((i + 1) * tileSize.x + cPos.x + tsOff.x, (j + 1) * tileSize.y + cPos.y);
+					quad[3].position = sf::Vector2f(i * tileSize.x + cPos.x, (j + 1) * tileSize.y + cPos.y);
+
+					//quad[0].position = sf::Vector2f(2080, 3008);
+					//quad[1].position = sf::Vector2f(2080 + 32, 3008);
+					//quad[2].position = sf::Vector2f(2080 + 32, 3008 +32);
+					//quad[3].position = sf::Vector2f(2080, 3008 + 32);
+
+					//quad[0].texCoords = sf::Vector2f(0, 0);
+					//quad[1].texCoords = sf::Vector2f(0 + 32, 0);
+					//quad[2].texCoords = sf::Vector2f(0 + 32, 0 + 32);
+					//quad[3].texCoords = sf::Vector2f(0, 0 + 32);
+
+					//std::cout << quad[0].texCoords.x << " | " << quad[0].texCoords.y << std::endl;
+						
+				}
+
+			return true;
+		}
+
+		void draw(sf::RenderTarget& rt, sf::RenderStates states) const override
+		{
+			// WHY ARE YOU NOT DRAWING???
+
+			// apply the transform
+			states.transform *= getTransform();
+
+			// apply the tileset texture
+			states.texture = m_tileset;
+
+			// draw the vertex array
+			rt.draw(m_vertices, states);
+		}
 	};
 
 	class Chunk final : public sf::Transformable, public sf::Drawable
@@ -506,7 +644,7 @@ private:
 			}
 		}
 
-	private:
+	
 		class ChunkArray final : public sf::Drawable
 		{
 		public:
@@ -542,7 +680,7 @@ private:
 			}
 			sf::Vector2u getTextureSize() const { return m_texture.getSize(); }
 
-		private:
+		
 			const sf::Texture& m_texture;
 			std::vector<sf::Vertex> m_vertices;
 			void draw(sf::RenderTarget& rt, sf::RenderStates states) const override
@@ -577,6 +715,7 @@ private:
 	};
 
 	std::vector<Chunk::Ptr> m_chunks;
+	std::vector<Chunkie> m_chunkies;
 	mutable std::vector<Chunk*> m_visibleChunks;
 	Chunk::Ptr& getChunkAndTransform(int x, int y, sf::Vector2u& chunkRelative)
 	{
@@ -590,22 +729,30 @@ private:
 	{
 		//look up all the tile sets and load the textures
 		const auto& tileSets = map.getTilesets();
-		const auto& layerIDs = layer.getTiles();
-		std::uint32_t maxID = std::numeric_limits<std::uint32_t>::max();
-		std::vector<const tmx::Tileset*> usedTileSets;
 
-		for (auto i = tileSets.rbegin(); i != tileSets.rend(); ++i)
+		for (auto i = 0; i < tileSets.size(); i++)
 		{
-			for (const auto& tile : layerIDs)
-			{
-				if (tile.ID >= i->getFirstGID() && tile.ID < maxID)
-				{
-					usedTileSets.push_back(&(*i));
-					break;
-				}
-			}
-			maxID = i->getFirstGID();
+			usedTileSets.push_back(&(tileSets.at(i)));
 		}
+
+		//for (const auto& c : chunks) {
+		//	const auto& layerIDs = c.tiles;
+		//	std::uint32_t maxID = std::numeric_limits<std::uint32_t>::max();
+
+		//	for (auto i = tileSets.rbegin(); i != tileSets.rend(); ++i)
+		//	{
+		//		for (const auto& tile : layerIDs)
+		//		{
+		//			if (tile.ID >= i->getFirstGID() && tile.ID < maxID)
+		//			{
+		//				usedTileSets.push_back(&(*i));
+		//				break;
+		//			}
+		//		}
+		//		maxID = i->getFirstGID();
+		//	}
+		//}
+
 
 		sf::Image fallback;
 		fallback.create(2, 2, sf::Color::Magenta);
@@ -631,34 +778,42 @@ private:
 			m_textureResource.insert(std::make_pair(path, std::move(newTexture)));
 		}
 
-		//calculate the number of chunks in the layer
-		//and create each one
-		const auto bounds = map.getBounds();
-		m_chunkCount.x = static_cast<sf::Uint32>(std::ceil(bounds.width / m_chunkSize.x));
-		m_chunkCount.y = static_cast<sf::Uint32>(std::ceil(bounds.height / m_chunkSize.y));
-
 		sf::Vector2u tileSize(map.getTileSize().x, map.getTileSize().y);
 
-		for (auto y = 0u; y < m_chunkCount.y; ++y)
-		{
-			sf::Vector2f tileCount(m_chunkSize.x / tileSize.x, m_chunkSize.y / tileSize.y);
-			for (auto x = 0u; x < m_chunkCount.x; ++x)
-			{
-				// calculate size of each Chunk (clip against map)
-				if ((x + 1) * m_chunkSize.x > bounds.width)
-				{
-					tileCount.x = (bounds.width - x * m_chunkSize.x) / map.getTileSize().x;
-				}
-				if ((y + 1) * m_chunkSize.y > bounds.height)
-				{
-					tileCount.y = (bounds.height - y * m_chunkSize.y) / map.getTileSize().y;
-				}
-				//m_chunks.emplace_back(std::make_unique<Chunk>(layer, usedTileSets,
-				//    sf::Vector2f(x * m_chunkSize.x, y * m_chunkSize.y), tileCount, map.getTileCount().x, m_textureResource));
-				m_chunks.emplace_back(std::make_unique<Chunk>(layer, usedTileSets,
-					sf::Vector2f(x * m_chunkSize.x, y * m_chunkSize.y), tileCount, tileSize, map.getTileCount().x, m_textureResource, map.getAnimatedTiles()));
-			}
+		for (const auto& c : chunks) {
+			Chunkie chunkie;
+			chunkie.load(m_textureResource, usedTileSets, tileSize, c.tiles, c.size.x, c.size.y, c.position);
+			m_chunkies.push_back(chunkie);
 		}
+
+		//calculate the number of chunks in the layer
+		//and create each one
+		//const auto bounds = map.getBounds();
+		//m_chunkCount.x = static_cast<sf::Uint32>(std::ceil(bounds.width / m_chunkSize.x));
+		//m_chunkCount.y = static_cast<sf::Uint32>(std::ceil(bounds.height / m_chunkSize.y));
+
+		//sf::Vector2u tileSize(map.getTileSize().x, map.getTileSize().y);
+
+		//for (auto y = 0u; y < m_chunkCount.y; ++y)
+		//{
+		//	sf::Vector2f tileCount(m_chunkSize.x / tileSize.x, m_chunkSize.y / tileSize.y);
+		//	for (auto x = 0u; x < m_chunkCount.x; ++x)
+		//	{
+		//		// calculate size of each Chunk (clip against map)
+		//		if ((x + 1) * m_chunkSize.x > bounds.width)
+		//		{
+		//			tileCount.x = (bounds.width - x * m_chunkSize.x) / map.getTileSize().x;
+		//		}
+		//		if ((y + 1) * m_chunkSize.y > bounds.height)
+		//		{
+		//			tileCount.y = (bounds.height - y * m_chunkSize.y) / map.getTileSize().y;
+		//		}
+		//		//m_chunks.emplace_back(std::make_unique<Chunk>(layer, usedTileSets,
+		//		//    sf::Vector2f(x * m_chunkSize.x, y * m_chunkSize.y), tileCount, map.getTileCount().x, m_textureResource));
+		////		m_chunks.emplace_back(std::make_unique<Chunk>(layer, usedTileSets,
+		////			sf::Vector2f(x * m_chunkSize.x, y * m_chunkSize.y), tileCount, tileSize, map.getTileCount().x, m_textureResource, map.getAnimatedTiles()));
+		//	}
+		//}
 	}
 
 	void updateVisibility(const sf::View& view) const
@@ -687,19 +842,73 @@ private:
 		std::swap(m_visibleChunks, visible);
 	}
 
+	// gets visible chunks of layer
+	std::vector<MapLayer::Chunk*> getVisibleChunks(sf::RenderTarget& rt) {
+		if (!m_isObjectLayer) {
+			updateVisibility(rt.getView());
+
+			return m_visibleChunks;
+		}
+	}
+
+	// updates and return visible objects of layer
+	std::vector<tmx::Object> getVisibleObjects(sf::View *view) {
+
+		if (isObjectLayer()) {
+			visibleObjects.clear();
+
+			float vX = view->getCenter().x - view->getSize().x / 2;
+			float vY = view->getCenter().y - view->getSize().y / 2;
+			float vW = view->getSize().x;
+			float vH = view->getSize().y;
+
+			for (const auto& o : objects) {
+				if (util::checkRectCollision(vX, vY, vW, vH, o.getAABB().left, o.getAABB().top, o.getAABB().width, o.getAABB().height))
+					visibleObjects.push_back(o);
+			}
+
+			//std::cout << view->getCenter().x << std::endl;
+
+			return visibleObjects;
+		}
+		else
+			return visibleObjects;
+	}
+
+	void getVisibleTiles(const sf::View& view) const {
+		const auto& layers = map->getLayers();
+		const auto& layerProperties = layers[idx]->getProperties();
+		const auto& tiles = layers[idx]->getLayerAs<tmx::TileLayer>().getTiles();
+		//const auto& tileset = layers[idx]->getLayerAs<tmx::TileLayer>().get
+		//std::cout << "wtf: " << tiles.at(0) << std::endl;
+	}
+
 	void draw(sf::RenderTarget& rt, sf::RenderStates states) const override
 	{
 		// draw tile layers
 		if (!m_isObjectLayer) {
+			//getVisibleTiles(rt.getView());
 			//calc view coverage and draw nearest chunks
-			updateVisibility(rt.getView());
-			for (const auto& c : m_visibleChunks)
-			{
-				// TODO
-				// this is where tiles should be ordered before drawn!!
-				// * put tiles in a ordered list of drawables 
-				// ordered based on x and y !!
-				rt.draw(*c, states);
+			//updateVisibility(rt.getView());
+			//std::cout << "visChunksize: " << m_visibleChunks.size() << " | allChunkSize: " << m_chunks.size() << std::endl;
+ 		//	for (const auto& c : m_visibleChunks)
+			//{
+			//	// TODO
+			//	// this is where tiles should be ordered before drawn!!
+			//	// * put tiles in a ordered list of drawables 
+			//	// ordered based on x and y !!
+			//	rt.draw(*c, states);
+			//}
+
+			// TODO NOWWWW
+			// CORRECT TEXTURE SIZE FOR DRAWING THE VISIBLE CHUNKS
+			// DRAW ORDER - INTERCALATE WALLS/STAIRS/OBJECTS WITH ENTITIES OF THE SAME FLOOR
+			// IN VISIBLE CHUNKS !! AAA
+			// REPLICATE COLLIDING AND STAIR PHYSICS IN SERVER 
+			// SEND VISIBLE CHUNKS DATA TO CLIENT (IS IT A GOOD IDEA?)
+
+			for (const auto& c : m_chunkies) {
+				rt.draw(c, states);
 			}
 		}
 		else if (DRAW_COLLIDERS) { // if is object layer draw colliders if option is set for debug
