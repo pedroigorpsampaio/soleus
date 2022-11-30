@@ -55,6 +55,7 @@ class Entity: public Collidable
 		int getFloorIdx(); // gets player current floor as an array index to be used in layer arrays
 		int load(std::string texturePath, float scaleX, float scaleY); // loads entity
 		void update(float dt); // updates entity in each cycle of the game loop
+		void draw(sf::RenderTarget& rt, sf::Vector2f camera); // draws entity in a texture, relative to camera
 		void draw(sf::RenderWindow& window); // draws entity in window received in param
 };
 

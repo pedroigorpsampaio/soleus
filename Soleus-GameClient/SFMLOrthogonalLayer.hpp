@@ -85,6 +85,9 @@ public:
 	const tmx::Map *map;
 	std::size_t idx;
 
+	mutable Player *player; // reference to player
+	mutable sf::Vector2f camera; // game camera
+
 	MapLayer(const tmx::Map& map, std::size_t idx)
 	{
 		const auto& layers = map.getLayers();
@@ -269,11 +272,15 @@ public:
 	public:
 		sf::VertexArray m_vertices;
 		sf::Texture *m_tileset;
+		sf::Rect<float> rect;
+		sf::Vector2f camera; // camera based on players position
 
 		bool load(TextureResource& tilesetResource, std::vector<const tmx::Tileset*> tilesets, 
 			sf::Vector2u tileSize, std::vector<tmx::TileLayer::Tile> tiles, 
 				unsigned int width, unsigned int height, tmx::Vector2i position)
 		{
+			rect = sf::Rect<float>(position.x*tileSize.x, position.y*tileSize.y,
+									width * tileSize.x, height * tileSize.y);
 			//float atlasW, atlasH;
 			//for (const auto& ts : tilesets) {
 			//	atlasW += ts->getImageSize().x; atlasH += ts->getImageSize().y;
@@ -376,18 +383,38 @@ public:
 			return true;
 		}
 
+		// updates before drawing map and entities
+		void update(sf::View& view, sf::Vector2f camera, Player& player) {
+			this->camera.x = camera.x;
+			this->camera.y = camera.y;
+
+			// TODO
+			// UPDATE VISIBLE CHUNKS TO CHECK COLLISION BETWEEN CHUNKS AND NOW CAMERA RECT (INSTEAD OF VIEW RECT)
+			// CORRECT DRAWING OF PLAYER, ENTITIES AND COLLIDERS (NO BLUR ON SCALE!!!)
+			// DRAW ORDER - INTERCALATE WALLS/STAIRS/OBJECTS WITH ENTITIES OF THE SAME FLOOR IN VISIBLE CHUNKS !! AAA
+			// REPLICATE COLLIDING AND STAIR PHYSICS IN SERVER 
+			// SEND VISIBLE CHUNKS DATA TO CLIENT (IS IT A GOOD IDEA?)
+
+			//std::cout << vpAnchor.x << std::endl;
+		}
+
 		void draw(sf::RenderTarget& rt, sf::RenderStates states) const override
 		{
-			// WHY ARE YOU NOT DRAWING???
+			// adjust based on game camera that follows player
+			sf::Transform t = getTransform();
+			t.translate(-camera.x, -camera.y);
 
 			// apply the transform
-			states.transform *= getTransform();
+			states.transform *= t;
 
 			// apply the tileset texture
 			states.texture = m_tileset;
 
 			// draw the vertex array
 			rt.draw(m_vertices, states);
+
+			//t.translate(camera.x, camera.y);
+			//states.transform *= t;
 		}
 	};
 
@@ -715,8 +742,14 @@ public:
 	};
 
 	std::vector<Chunk::Ptr> m_chunks;
-	std::vector<Chunkie> m_chunkies;
+	mutable std::vector<Chunkie> m_chunkies;
+	mutable std::vector<Chunkie> m_visibleChunkies;
 	mutable std::vector<Chunk*> m_visibleChunks;
+
+	std::vector<Chunkie>& getVisibleChunks() {
+		return m_visibleChunkies;
+	}
+
 	Chunk::Ptr& getChunkAndTransform(int x, int y, sf::Vector2u& chunkRelative)
 	{
 		uint32_t chunkX = floor((x * m_MapTileSize.x) / m_chunkSize.x);
@@ -883,6 +916,41 @@ public:
 		//std::cout << "wtf: " << tiles.at(0) << std::endl;
 	}
 
+	// updates list of visible chunkies
+	void updateView(sf::View& view, sf::Vector2u windowSize, Player *player) const
+	{
+		std::vector<sf::RenderTexture> ctexs;
+		sf::Vector2f viewCorner = view.getCenter();
+		viewCorner -= view.getSize() / 1.8f;
+		sf::Rect<float> viewRect(viewCorner.x, viewCorner.y, view.getSize().x*1.2f, view.getSize().y*1.2f);
+
+		// updates camera;
+		//sf::View tempView;
+		//sf::Vector2f centeredPlayerPos(player->getPos().x + player->getCenterOffset().x,
+		//	player->getPos().y + player->getCenterOffset().y);
+		//tempView.setSize(view.getSize());
+		//tempView.setCenter(centeredPlayerPos);
+		//sf::Vector2f vpAnchor(view.getViewport().width * view.getCenter().x,
+		//	view.getViewport().height * view.getCenter().y);
+		this->camera.x = player->getPos().x - (windowSize.x * RES_FACTOR) * view.getViewport().width / 2;
+		this->camera.y = player->getPos().y - (windowSize.y * RES_FACTOR) * view.getViewport().height /2;
+
+		m_visibleChunkies.clear();
+		int vCount = 0;
+		for (int i = 0; i < m_chunkies.size(); i++) {
+			m_chunkies.at(i).update(view, this->camera, *player);
+			//sf::Rect<float> cRect(c., viewCorner.y, view.getSize().x, view.getSize().y);
+			if (util::checkRectCollision(m_chunkies.at(i).rect, viewRect)) {
+				vCount++;
+				m_visibleChunkies.push_back(m_chunkies.at(i));
+			}
+		}
+
+		this->player = player;
+		//this->camera = sf::Vector2f(player->getPos().x, player->getPos().y);
+		//std::cout << vCount << std::endl;
+	}
+
 	void draw(sf::RenderTarget& rt, sf::RenderStates states) const override
 	{
 		// draw tile layers
@@ -900,24 +968,23 @@ public:
 			//	rt.draw(*c, states);
 			//}
 
-			// TODO NOWWWW
-			// CORRECT TEXTURE SIZE FOR DRAWING THE VISIBLE CHUNKS
-			// DRAW ORDER - INTERCALATE WALLS/STAIRS/OBJECTS WITH ENTITIES OF THE SAME FLOOR
-			// IN VISIBLE CHUNKS !! AAA
-			// REPLICATE COLLIDING AND STAIR PHYSICS IN SERVER 
-			// SEND VISIBLE CHUNKS DATA TO CLIENT (IS IT A GOOD IDEA?)
-
 			for (const auto& c : m_chunkies) {
 				rt.draw(c, states);
+				//util::drawRect(rt, c.rect, sf::Color::Black);
+			}
+			if (this->m_floor == player->floor) {
+				player->draw(rt, camera);
 			}
 		}
 		else if (DRAW_COLLIDERS) { // if is object layer draw colliders if option is set for debug
 			auto color = m_layerType == LayerType::Collision ? sf::Color::Red : sf::Color::Green;
 			for (const auto object : objects) {
-				util::drawRect(rt, sf::Vector2f(object.getAABB().left, object.getAABB().top), 
-						sf::Vector2f(object.getAABB().left + object.getAABB().width, object.getAABB().top),
-						sf::Vector2f(object.getAABB().left + object.getAABB().width, object.getAABB().top + object.getAABB().height), 
-						sf::Vector2f(object.getAABB().left, object.getAABB().top + object.getAABB().height),
+				sf::Vector2f colScreen = sf::Vector2f(object.getAABB().left-camera.x,
+														object.getAABB().top-camera.y);
+				util::drawRect(rt, sf::Vector2f(colScreen.x, colScreen.y), 
+						sf::Vector2f(colScreen.x + object.getAABB().width, colScreen.y),
+						sf::Vector2f(colScreen.x + object.getAABB().width, colScreen.y + object.getAABB().height), 
+						sf::Vector2f(colScreen.x, colScreen.y + object.getAABB().height),
 						color);
 			}
 		}

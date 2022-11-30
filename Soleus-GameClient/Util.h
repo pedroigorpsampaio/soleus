@@ -6,7 +6,10 @@
 #include <SFML\Graphics\RenderTarget.hpp>
 #include <SFML\Graphics\VertexArray.hpp>
 
-static const int TILESIZE = 32;
+static const int TILESIZE = 32;	/// world tile size
+static const int WINDOW_W = 960;	/// game window width
+static const int WINDOW_H = 640;	/// game window height
+static const float RES_FACTOR = 1.0f; /// factor that controls resolution of the game
 static const int INIT_X = 2080;	/// new player x
 static const int INIT_Y = 3008; /// new player y
 static const int INIT_FLOOR = 0; /// new player floor
@@ -34,6 +37,9 @@ namespace util {
 	
 	/// checks collision between two rectangles
 	bool checkRectCollision(float x1, float y1, float w1, float h1, float x2, float y2, float w2, float h2);
+
+	/// checks collision between two rectangles
+	bool checkRectCollision(sf::Rect<float> rect1, sf::Rect<float> rect2);
 
 	/// draw rectangles in screen (for debug purposes)
 	void drawRect(sf::RenderTarget& rt, sf::Rect<float> rect, sf::Color color);

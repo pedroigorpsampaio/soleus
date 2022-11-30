@@ -41,6 +41,8 @@ class Game : public GameLoop
 	//private:
 		void sendPacketToServer(int messageType); /// Prepares the different types of packets and send to server 
 		void sendPingToServer(); /// sends ping packet to the server
+	private:
+		void initRender();
 };
 
 // handles packets received - called as a callback from network object

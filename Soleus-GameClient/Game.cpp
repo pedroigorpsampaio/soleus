@@ -8,18 +8,20 @@
 #include "SFMLOrthogonalLayer.hpp"
 
 float speed = PLAYER_SPEED; // moving speed
-float zoomSpeed = 40.f; // zoom speed
+float zoomSpeed = 32.f; // zoom speed
 sf::RenderWindow window; // game window
 sf::Font font; 		// game main font
 
 // game views
-sf::View gameView, miniMapView, uiView;
+sf::View gameView, textureView, miniMapView, uiView;
+float textureViewZoom = 1.0f;
 
 // input handler
 InputHandler inputHandler;
 
 // game map texture
-sf::RenderTexture texture;
+sf::RenderTexture renderTexture;
+sf::Sprite renderSprite;
 // Map 
 tmx::Map map;
 /// map layers
@@ -87,10 +89,25 @@ Game::Game() {
 	instance = this;
 }
 
+// inits texture and the respective sprite responsible for rendering game 
+void Game::initRender() {
+	const unsigned int maxSize = sf::Texture::getMaximumSize();
+	// Create a new render-texture to render tilemap
+	if (!renderTexture.create(sf::VideoMode::getDesktopMode().width * RES_FACTOR,
+								sf::VideoMode::getDesktopMode().height * RES_FACTOR)) // ERRORRRRR
+		std::cout << "error creating map texture" << std::endl;
+	/*if (!renderTexture.create(map.getTileSize().x * 500, map.getTileSize().y * 500))
+		std::cout << "error creating map texture" << std::endl;*/
+
+	renderTexture.setSmooth(true);
+	
+	renderSprite.setTexture(renderTexture.getTexture());
+}
+
 // loads game configurations - run at the start of game cycle
 bool Game::load() {
 	// create the window
-	window.create(sf::VideoMode(960, 640), "Tilemap");
+	window.create(sf::VideoMode(WINDOW_W, WINDOW_H), "Tilemap");
 	// limits fps
 	window.setVerticalSyncEnabled(true);
 	// disable unwanted kep press event calls when key is being hold
@@ -188,7 +205,10 @@ bool Game::load() {
 	// viewport of game view
 	gameView.setViewport(sf::FloatRect(0.0f, 0.0f, 0.85f, 1.0f));
 	// initial zoom
-	gameView.zoom(1.5f);
+	//gameView.zoom(1.5f);
+	textureView = sf::View(sf::FloatRect(0, 0, WINDOW_W * 0.85f * RES_FACTOR, WINDOW_H * RES_FACTOR));
+	// viewport of game view
+	textureView.setViewport(sf::FloatRect(0.0f, 0.0f, 0.85f, 1.0f));
 	// set game view
 	window.setView(gameView);
 	// minimap view
@@ -200,14 +220,8 @@ bool Game::load() {
 	// viewport of ui view
 	uiView.setViewport(sf::FloatRect(0.85f, 0.15f, 0.15f, 0.85f));
 
-	// Create a new render-texture to render tilemap
-	/*if (!texture.create(map.getTileSize().x * map.getTileCount().x, map.getTileSize().y * map.getTileCount().y))
-		std::cout << "error creating map texture" << std::endl;*/
-	if (!texture.create(map.getTileSize().x * 200, map.getTileSize().y * 200))
-		std::cout << "error creating map texture" << std::endl;
-
-	texture.setSmooth(true);
-	sf::Sprite sprite;
+	// init render texture
+	initRender();
 
 	// creates pinger thread - pings server every {pingerInterval}
 	//pingerThread = std::make_unique<sf::Thread>(&Game::pinger, this);
@@ -244,7 +258,10 @@ void Game::update(float dt) {
 	svTimeText.setString(svTimeStr);
 
 	// centers minimap based on game view
-	miniMapView.setCenter(sf::Vector2f(gameView.getCenter()));
+	miniMapView.setCenter(sf::Vector2f(textureView.getCenter()));
+	//textureView.setCenter(sf::Vector2f(gameView.getCenter()));
+
+	// TRY TO CORRECT TEXTURE DRAWING THROUGH VIEW (TEXTURE VIEW NEW STRATS)
 
 	// if reaches latency check interval, send ping msg to measure latency
 	if (pingTimer >= pingInterval) {
@@ -263,6 +280,17 @@ void Game::update(float dt) {
 	sf::Event event;
 	while (window.pollEvent(event)) {
 		inputHandler.handleInput(event);
+
+		if (event.type == sf::Event::Resized)
+		{
+			// update the view to the new size of the window
+			textureView.setSize(event.size.width*textureView.getViewport().width * RES_FACTOR * textureViewZoom,
+								event.size.height* textureView.getViewport().height* RES_FACTOR * textureViewZoom);
+			textureView.setCenter(event.size.width * textureView.getViewport().width/2* RES_FACTOR,
+									event.size.height * textureView.getViewport().height/2* RES_FACTOR);
+			//sf::FloatRect visibleArea(0.f, 0.f, event.size.width, event.size.height);
+			//window.setView(sf::View(visibleArea));
+		}
 
 		// key events -- send to server for proper processing
 		//if (event.type == sf::Event::KeyPressed || event.type == sf::Event::KeyReleased) {
@@ -470,16 +498,25 @@ void Game::update(float dt) {
 	//std::cout << "sv diff: " << svDiffX << std::endl;
 
 	// centers map based on player 
-	sf::Vector2f centeredPlayerPos(player.getPos().x + player.getCenterOffset().x,
-									player.getPos().y + player.getCenterOffset().y);
+	sf::Vector2f centeredPlayerPos(player.getPos().x,
+									player.getPos().y);
 	gameView.setCenter(sf::Vector2f(centeredPlayerPos));
 
 	// handle zooming
 	if (inputHandler.isZooming()) {
-		if (inputHandler.getZoomDelta() == 1)
+		if (inputHandler.getZoomDelta() == 1) {
 			gameView.zoom(1 - 0.1f * zoomSpeed * dt);
-		else
+			textureView.zoom(1 - 0.1f * zoomSpeed * dt);
+			textureViewZoom *= (1 - 0.1f * zoomSpeed * dt);
+		}
+		else {
 			gameView.zoom(1 + 0.1f * zoomSpeed * dt);
+			float dZ = 1 + 0.1f * zoomSpeed * dt;
+			if (textureViewZoom * dZ < 1.0f) {
+				textureView.zoom(dZ);
+				textureViewZoom *= dZ;
+			} 
+		}
 		// halt all events to stop wheel zooming
 		inputHandler.halt();
 	}
@@ -494,7 +531,13 @@ void Game::update(float dt) {
 void Game::draw()
 {
 	// Clear the whole texture with red color
-	texture.clear(sf::Color::Black);
+	renderTexture.clear(sf::Color::Black);
+	
+	//renderTexture.setView(gameView);
+	//sf::Vector2f centeredPlayerPos(player.getPos().x + player.getCenterOffset().x,
+		//player.getPos().y + player.getCenterOffset().y);
+
+	//renderTexture.setView(textureView);
 
 	// Draw map to the texture - only floors that are of interest for player.
 	// Given that each array of categorized layers are ordered, we can calculate
@@ -504,45 +547,55 @@ void Game::draw()
 
 	// draw the selected floors with all its tile layers (walls, inbetweens...)
 	for (int i = initI; i <= finalI; i++) {
-		texture.draw(*floors.at(i));
-		texture.draw(*inbetweens.at(i));
-		texture.draw(*walls.at(i));
+		floors.at(i)->updateView(textureView, window.getSize(), &player);
+		inbetweens.at(i)->updateView(textureView, window.getSize(), &player);
+		walls.at(i)->updateView(textureView, window.getSize(), &player);
+		renderTexture.draw(*floors.at(i));
+		renderTexture.draw(*inbetweens.at(i));
+		renderTexture.draw(*walls.at(i));
 	}
 
 	// if set on (for debug) draw players floor colliders
 	if (DRAW_COLLIDERS) {
-		texture.draw(*stairs.at(player.getFloorIdx()));
-		texture.draw(*collisions.at(player.getFloorIdx()));
+		stairs.at(player.getFloorIdx())->updateView(textureView, window.getSize(), &player);
+		collisions.at(player.getFloorIdx())->updateView(textureView, window.getSize(), &player);
+		renderTexture.draw(*stairs.at(player.getFloorIdx()));
+		renderTexture.draw(*collisions.at(player.getFloorIdx()));
 	}
 
 	// We're done drawing to the texture
-	texture.display();
+	renderTexture.display();
+	renderSprite.setTexture(renderTexture.getTexture());
 
 	// player sprites and minimap pinpoint
 	sf::CircleShape playerPoint;
 	playerPoint.setRadius(6);
 	playerPoint.setFillColor(sf::Color::White);
-	playerPoint.setPosition(gameView.getCenter().x - 6, gameView.getCenter().y - 6);
+	playerPoint.setPosition(textureView.getCenter().x - 6, textureView.getCenter().y - 6);
 
 	// clear the window to start rendering it
 	window.clear();
-	// draw game view
-	window.setView(gameView);
+	// set game view
+	window.setView(textureView);
+
+	// draw tilemap
+	window.draw(renderSprite);
 
 	// Draw the texture for game view
-	sf::Sprite sprite(texture.getTexture());
-	window.draw(sprite);
+	//sf::Sprite sprite(texture.getTexture());
 
 	//for (int i = 0; i < 9; i++)
 		//window.draw(*layers.at(i));
 
+	window.setView(gameView);
+
 	// draw entities
-	player.draw(window); // draw player
-	demon.draw(window); // draw demon example of creature
+	//player.draw(window); // draw player
+	//demon.draw(window); // draw demon example of creature
 
 	// draw texture for minimap view
 	window.setView(miniMapView);
-	window.draw(sprite);
+	window.draw(renderSprite);
 	window.draw(playerPoint);
 
 	// draw in ui view

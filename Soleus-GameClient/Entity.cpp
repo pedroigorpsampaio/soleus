@@ -147,7 +147,7 @@ int Entity::load(std::string texturePath, float scaleX, float scaleY)
 
 	texture.setSmooth(true);
 	sprite.setTexture(texture);
-	sprite.scale(sf::Vector2f(scaleX, scaleY));
+	sprite.setScale(sf::Vector2f(scaleX, scaleY));
 
 	collider.adjustCollider(0, sprite.getGlobalBounds().width * 0.25f,
 		sprite.getGlobalBounds().width * 0.5f, sprite.getGlobalBounds().height * 0.25f);
@@ -175,10 +175,28 @@ void Entity::update(float dt) {
 	collider.updateCollider(getPos());
 }
 
+// draws entity in a texture, relative to camera
+void Entity::draw(sf::RenderTarget& rt, sf::Vector2f camera) {
+	// centers entity based on its texture size
+	sprite.setPosition(pos.x - getCenterOffset().x - camera.x, 
+						pos.y - getCenterOffset().y - camera.y);
+	
+	// draw entity
+	rt.draw(sprite);
+
+	// if set on (for debug), draw collider of entity
+	if (DRAW_COLLIDERS) {
+		sf::FloatRect colScreen(collider.getRect().left - camera.x,
+								collider.getRect().top - camera.y,
+								collider.getRect().width, collider.getRect().height);
+		util::drawRect(rt, colScreen, sf::Color::Blue);
+	}
+}
+
 // draws entity
 void Entity::draw(sf::RenderWindow& window) {
 	// centers entity based on its texture size
-	sprite.setPosition(pos.x - getCenterOffset().x, getPos().y - getCenterOffset().y);
+	sprite.setPosition(pos.x - getCenterOffset().x, pos.y - getCenterOffset().y);
 	// draw entity
 	window.draw(sprite);
 	
